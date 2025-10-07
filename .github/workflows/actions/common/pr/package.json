@@ -1,0 +1,14 @@
+{
+  "name": "auto-pull-request-action",
+  "version": "0.0.1",
+  "description": "Action para criar ou atualizar PRs automaticamente.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
+    "fs": "0.0.1-security"
+  }
+}

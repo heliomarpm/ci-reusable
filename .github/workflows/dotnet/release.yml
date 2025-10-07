@@ -1,0 +1,56 @@
+# Workflow de Release Semântica para .NET
+# Utiliza a action semantic-release (principalmente para Tagging e Changelog)
+name: .NET Semantic Release
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        description: 'Versão do Node.js a ser usada para o semantic-release (e.g., 20.x).'
+        required: false
+        default: '20.x'
+        type: string
+      branch_to_watch:
+        description: 'Branch que deve disparar o release (e.g., main).'
+        required: false
+        default: 'main'
+        type: string
+      debug:
+        description: 'Habilita logs de debug do semantic-release (--debug).'
+        required: false
+        default: 'false'
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        description: 'Token GITHUB_TOKEN para publicar releases e tags.'
+        required: true
+
+jobs:
+  run_semantic_release:
+    name: Executar Semantic Release (.NET)
+    if: github.ref == format('refs/heads/{0}', inputs.branch_to_watch)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: 'npm'
+      
+      - name: 🚀 Executar Semantic Release Híbrido
+        # Nota: O semantic-release para .NET será usado primariamente para criar a tag e o Release no GitHub. 
+        # O Publish real no NuGet será feito no publish.yml.
+        uses: ./.github/workflows/actions/common/semantic-release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Não é necessário NPM_TOKEN se não for publicar npm (a action é flexível)
+          debug: ${{ inputs.debug }}
+          # Exemplo de configuração específica para desabilitar o plugin npm se for só para .NET
+          config_path: .github/workflows/actions/common/semantic-release/release.config-nuget-only.js 
+          # Para .NET, o pacote deve ter uma configuração que não use o plugin @semantic-release/npm

@@ -1,0 +1,82 @@
+# Workflow de Teste para .NET
+# Utilizado para restaurar dependências, buildar, executar testes e gerar cobertura.
+name: .NET Test and Coverage
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        description: 'Versão do .NET SDK a ser usada (e.g., 8.0.x, 7.0.x).'
+        required: false
+        default: '8.0.x'
+        type: string
+      test_project:
+        description: 'Caminho ou nome do projeto de teste (e.g., **/*.Tests.csproj).'
+        required: false
+        default: '**/*.Tests.csproj'
+        type: string
+      solution_path:
+        description: 'Caminho do arquivo .sln ou do diretório raiz.'
+        required: false
+        default: '.'
+        type: string
+      coverage_format:
+        description: 'Formato da cobertura (e.g., cobertura, json).'
+        required: false
+        default: 'json'
+        type: string
+      coverage_output_path:
+        description: 'Caminho para o arquivo de resumo de cobertura (e.g., coverage/coverage-summary.json).'
+        required: false
+        default: 'coverage/coverage-summary.json'
+        type: string
+
+jobs:
+  run_tests:
+    name: Teste e Cobertura .NET (${{ inputs.dotnet_version }})
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar .NET SDK ${{ inputs.dotnet_version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+          
+      - name: ♻️ Restaurar Dependências (Cache)
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles(format('{0}/**/*.csproj', inputs.solution_path)) }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: 🏗️ Restaurar e Buildar
+        run: dotnet build ${{ inputs.solution_path }} --configuration Release
+
+      - name: 🧪 Executar Testes e Gerar Cobertura (Coverlet)
+        # Coverlet.msbuild é assumido para gerar a cobertura
+        run: |
+          dotnet test ${{ inputs.test_project }} \
+            --configuration Release \
+            --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=${{ inputs.coverage_format }} \
+            /p:CoverletOutput=./coverage/ \
+            /p:MergeWith=./coverage/coverage.json # Necessário para gerar um único arquivo se tiver múltiplos projetos
+
+      - name: 📝 Mover Resumo de Cobertura (JSON)
+        # Move o arquivo gerado pelo Coverlet (geralmente coverage.json) para o nome padronizado
+        if: inputs.coverage_format == 'json'
+        run: |
+          mkdir -p coverage
+          find coverage -name 'coverage.json' -exec mv {} ${{ inputs.coverage_output_path }} \; || true # true para ignorar falha se não encontrar
+        
+      - name: 📤 Publicar Resumo de Cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: ${{ inputs.coverage_output_path }}
+          retention-days: 1

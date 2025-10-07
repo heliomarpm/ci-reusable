@@ -1,0 +1,27 @@
+# Action para Execução Híbrida do Semantic Release
+name: 'Semantic Release Híbrido'
+description: 'Executa semantic-release, usando a config do repo consumidor ou o padrão se não existir. Instala plugins.'
+
+inputs:
+  node_version:
+    description: 'Versão do Node.js a ser usada.'
+    required: false
+    default: '20.x'
+  github_token:
+    description: 'GITHUB_TOKEN para criar releases e tags.'
+    required: true
+  npm_token:
+    description: 'NPM_TOKEN para publicar no NPM (opcional, mas recomendado).'
+    required: false
+  debug:
+    description: 'Habilita logs de debug do semantic-release (--debug).'
+    required: false
+    default: 'false'
+  config_path:
+    description: 'Caminho alternativo para o release.config.js do template.'
+    required: false
+    default: '.github/workflows/actions/common/semantic-release/release.config.js'
+
+runs:
+  using: 'node20'
+  main: 'index.js'

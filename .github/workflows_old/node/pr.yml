@@ -1,0 +1,15 @@
+name: Node - Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  pr-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate PR Template
+        uses: ./.github/workflows/actions/common/pr

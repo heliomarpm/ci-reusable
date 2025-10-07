@@ -1,0 +1,16 @@
+{
+  "name": "semantic-release-action",
+  "version": "0.0.1",
+  "description": "Semantic Release action híbrida com plugins inclusos",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "semantic-release": "^24.2.9",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.6",
+    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^14.1.0"
+  }
+}

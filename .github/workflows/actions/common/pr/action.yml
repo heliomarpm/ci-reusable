@@ -1,0 +1,26 @@
+# Action para Criação/Atualização de Pull Request
+name: 'Auto Pull Request'
+description: 'Cria ou atualiza um Pull Request automaticamente entre branches. Adiciona resumo de cobertura se disponível.'
+
+inputs:
+  github_token:
+    description: 'GITHUB_TOKEN com permissões de escrita em PRs.'
+    required: true
+  head_branch:
+    description: 'Branch de origem (e.g., develop).'
+    required: true
+  base_branch:
+    description: 'Branch de destino (e.g., main).'
+    required: true
+  pr_title:
+    description: 'Título do Pull Request.'
+    required: false
+    default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'
+  coverage_summary_path:
+    description: 'Caminho para o coverage-summary.json (opcional).'
+    required: false
+    default: ''
+
+runs:
+  using: 'node20'
+  main: 'index.js'

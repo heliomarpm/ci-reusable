@@ -1,0 +1,11 @@
+name: "Semantic Release (Hybrid)"
+description: "Executa semantic-release usando configuração local ou padrão do template."
+runs:
+  using: "node20"
+  main: "index.js"
+
+inputs:
+  config-file:
+    description: "Caminho para o arquivo de configuração do semantic-release"
+    required: false
+    default: ".github/workflows/actions/common/semantic-release/release.config.js"

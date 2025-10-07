@@ -1,0 +1,60 @@
+# Workflow de Publicação de Pacotes Node.js
+# Publica pacotes após o release ser criado. Pode ser chamado manualmente ou após o release.
+name: Node.js Publish Package
+
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        description: 'Versão do Node.js a ser usada (e.g., 20.x).'
+        required: false
+        default: '20.x'
+        type: string
+      package_manager:
+        description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
+        required: false
+        default: 'npm'
+        type: string
+      publish_command:
+        description: 'Comando para publicar o pacote.'
+        required: false
+        default: 'npm publish'
+        type: string
+      registry_url:
+        description: 'URL do registry (e.g., https://npm.pkg.github.com/OWNER).'
+        required: false
+        default: 'https://registry.npmjs.org'
+        type: string
+    secrets:
+      NPM_TOKEN:
+        description: 'Token para autenticação no registry (NPM ou GitHub Packages).'
+        required: true
+
+jobs:
+  publish_package:
+    name: Publicar Pacote Node.js
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+          registry-url: ${{ inputs.registry_url }}
+          scope: '@${{ github.repository_owner }}' # Necessário para GitHub Packages
+
+      - name: 📥 Instalar Dependências
+        run: ${{ inputs.package_manager }} install
+        
+      # Opcional: Se necessário, a build deve ser feita antes do publish
+      # - name: 🏗️ Rodar Build
+      #   run: npm run build
+
+      - name: 🚀 Publicar Pacote
+        run: ${{ inputs.publish_command }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

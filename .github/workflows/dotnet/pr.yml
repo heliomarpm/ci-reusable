@@ -1,0 +1,45 @@
+# Workflow de Pull Request Automatizado para .NET
+# Utiliza a mesma action de PR do Node.js, com o token e branches específicos.
+name: .NET Auto Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      base_branch:
+        description: 'Branch de destino do PR (e.g., main).'
+        required: false
+        default: 'main'
+        type: string
+      head_branch:
+        description: 'Branch de origem do PR (e.g., develop).'
+        required: false
+        default: 'develop'
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        description: 'Token GITHUB_TOKEN para permissões de PR.'
+        required: true
+
+jobs:
+  create_or_update_pr:
+    name: Criar/Atualizar PR (develop -> main)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: 📥 Baixar Resumo de Cobertura (Opcional)
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage # O local onde foi publicado no test.yml
+
+      - name: 🤖 Criar ou Atualizar Pull Request
+        # Reutiliza a action comum
+        uses: ./.github/workflows/actions/common/pr
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          base_branch: ${{ inputs.base_branch }}
+          head_branch: ${{ inputs.head_branch }}
+          coverage_summary_path: coverage/coverage-summary.json

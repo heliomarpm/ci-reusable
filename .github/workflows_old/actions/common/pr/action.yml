@@ -1,0 +1,30 @@
+name: "Reusable PR Creator"
+description: "Cria ou atualiza PR automaticamente usando template e arquivos opcionais de cobertura."
+
+inputs:
+  pr-template-file:
+    description: "Caminho para o template markdown da PR"
+    required: false
+  coverage-file:
+    description: "Caminho para arquivo de cobertura (opcional)"
+    required: false
+  base-branch:
+    description: "Branch base da PR"
+    required: false
+    default: "main"
+  head-branch:
+    description: "Branch de origem da PR"
+    required: false
+    default: "develop"
+  title:
+    description: "Título da PR"
+    required: false
+    default: "Auto PR: develop → main"
+  labels:
+    description: "Labels a adicionar na PR, separadas por vírgula"
+    required: false
+    default: "auto-generated,pending-review"
+
+runs:
+  using: "node20"
+  main: "index.js"

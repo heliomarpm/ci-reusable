@@ -1,0 +1,56 @@
+# Workflow de Teste para Node.js
+# Utilizado para executar testes, gerar cobertura e salvar o artefato de resumo.
+name: Node.js Test and Coverage
+
+# Permite que este workflow seja chamado por outros (reutilização)
+on:
+  workflow_call:
+    inputs:
+      node_version:
+        description: 'Versão do Node.js a ser usada (e.g., 20.x, 18.x).'
+        required: false
+        default: '20.x'
+        type: string
+      package_manager:
+        description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
+        required: false
+        default: 'npm'
+        type: string
+      test_command:
+        description: 'Comando para executar testes e gerar cobertura.'
+        required: false
+        default: 'npm test -- --coverage'
+        type: string
+    secrets:
+      NPM_TOKEN:
+        description: 'Token para autenticação privada, se necessário.'
+        required: false
+
+jobs:
+  run_tests:
+    name: Teste e Cobertura Node.js (${{ inputs.node_version }})
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
+
+      - name: 📥 Instalar Dependências
+        run: ${{ inputs.package_manager }} install
+
+      - name: 🧪 Executar Testes e Gerar Cobertura
+        run: ${{ inputs.test_command }}
+
+      - name: 📤 Publicar Resumo de Cobertura
+        # Assume que o comando de teste gera um arquivo coverage/coverage-summary.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage/coverage-summary.json
+          retention-days: 1

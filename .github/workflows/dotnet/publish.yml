@@ -1,0 +1,58 @@
+# Workflow de Publicação de Pacotes .NET (NuGet)
+# Publica o pacote NuGet após o release ser criado.
+name: .NET Publish NuGet Package
+
+on:
+  workflow_call:
+    inputs:
+      dotnet_version:
+        description: 'Versão do .NET SDK a ser usada (e.g., 8.0.x).'
+        required: false
+        default: '8.0.x'
+        type: string
+      project_path:
+        description: 'Caminho para o arquivo .csproj que será empacotado.'
+        required: true
+        type: string
+      nuget_source:
+        description: 'URL do feed NuGet de destino (e.g., https://api.nuget.org/v3/index.json).'
+        required: false
+        default: 'https://api.nuget.org/v3/index.json'
+        type: string
+      version_suffix:
+        description: 'Sufixo de versão opcional (e.g., -beta, -rc).'
+        required: false
+        default: ''
+        type: string
+    secrets:
+      NUGET_API_KEY:
+        description: 'Chave de API para autenticação no feed NuGet.'
+        required: true
+
+jobs:
+  publish_nuget:
+    name: Publicar Pacote NuGet
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: ⬇️ Checkout do Código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar .NET SDK ${{ inputs.dotnet_version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+          
+      - name: 🏗️ Criar Pacote NuGet (.nupkg)
+        # O número da versão será lido do .csproj ou gerado automaticamente se o projeto estiver configurado
+        run: |
+          dotnet pack ${{ inputs.project_path }} \
+            --configuration Release \
+            /p:VersionSuffix=${{ inputs.version_suffix }} \
+            --output ./nuget-packages
+
+      - name: 🚀 Publicar no NuGet Feed
+        run: dotnet nuget push "./nuget-packages/*.nupkg" \
+          --source ${{ inputs.nuget_source }} \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --skip-duplicate
