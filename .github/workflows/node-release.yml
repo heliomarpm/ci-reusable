@@ -30,9 +30,9 @@ on:
         type: boolean
 
     secrets:
-      # GITHUB_TOKEN:
-      #   description: 'Token GITHUB_TOKEN para publicar releases e tags.'
-      #   required: true
+      GITHUB_TOKEN:
+        description: 'Token GITHUB_TOKEN para publicar releases e tags.'
+        required: true
       NPM_TOKEN:
         description: 'Token para autenticação no NPM e GitHub Packages.'
         required: false
