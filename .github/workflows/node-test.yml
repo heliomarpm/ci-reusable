@@ -11,16 +11,25 @@ on:
         required: false
         default: '20.x'
         type: string
+
       package_manager:
         description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
         required: false
         default: 'npm'
         type: string
+
+      skip_tests:
+        description: 'Indica se os testes devem ser executados (e.g., true, false).'
+        required: false
+        default: false
+        type: boolean
+
       test_command:
         description: 'Comando para executar testes e gerar cobertura.'
         required: false
         default: 'npm test -- --coverage'
         type: string
+
     secrets:
       NPM_TOKEN:
         description: 'Token para autenticação privada, se necessário.'
@@ -28,6 +37,7 @@ on:
 
 jobs:
   run_tests:
+    if: ${{ !inputs.skip_tests }}
     name: Teste e Cobertura Node.js (${{ inputs.node_version }})
     runs-on: ubuntu-latest
     

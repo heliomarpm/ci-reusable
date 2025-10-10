@@ -10,21 +10,31 @@ on:
         required: false
         default: '8.0.x'
         type: string
+
+      skip_tests:
+        description: 'Indica se os testes devem ser executados (e.g., true, false).'
+        required: false
+        default: false
+        type: boolean
+
       test_project:
         description: 'Caminho ou nome do projeto de teste (e.g., **/*.Tests.csproj).'
         required: false
         default: '**/*.Tests.csproj'
         type: string
+
       solution_path:
         description: 'Caminho do arquivo .sln ou do diretório raiz.'
         required: false
         default: '.'
         type: string
+
       coverage_format:
         description: 'Formato da cobertura (e.g., cobertura, json).'
         required: false
         default: 'json'
         type: string
+
       coverage_output_path:
         description: 'Caminho para o arquivo de resumo de cobertura (e.g., coverage/coverage-summary.json).'
         required: false
@@ -33,6 +43,7 @@ on:
 
 jobs:
   run_tests:
+    if: ${{ !inputs.skip_tests }}
     name: Teste e Cobertura .NET (${{ inputs.dotnet_version }})
     runs-on: ubuntu-latest
     

@@ -7,7 +7,8 @@ async function run() {
   try {
     const githubToken = core.getInput('github_token', { required: true });
     const npmToken = core.getInput('npm_token');
-    const debug = core.getInput('debug') === 'true' ? '--debug' : '';
+    const debug = core.getInput('debug') ? '--debug' : '';
+    const simulateRelease = core.getInput('simulate_release');
     const configPath = core.getInput('config_path');
     const actionDir = path.join(__dirname, '..', '..', '..', '..', '..', '.github', 'workflows', 'actions', 'common', 'semantic-release');
     const consumerRepoDir = process.cwd();
@@ -50,6 +51,12 @@ async function run() {
       debug
     ].join(' ').trim();
     
+    if (simulateRelease) {
+      core.info('⚠️ Simulando release para fins de testes.');
+      command += ' --dry-run';
+    }
+
+    // Executar o semantic-release
     await exec.exec(command, [], {
         env: { ...process.env, 
                GITHUB_TOKEN: githubToken,

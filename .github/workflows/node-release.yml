@@ -10,16 +10,25 @@ on:
         required: false
         default: '20.x'
         type: string
+        
       branch_to_watch:
         description: 'Branch que deve disparar o release (e.g., main).'
         required: false
         default: 'main'
         type: string
+
       debug:
         description: 'Habilita logs de debug do semantic-release (--debug).'
         required: false
-        default: 'false'
-        type: string
+        default: false
+        type: boolean
+
+      simulate_release:
+        description: 'Simular release para testes (e.g., true, false).'
+        required: false
+        default: false
+        type: boolean
+
     secrets:
       GITHUB_TOKEN:
         description: 'Token GITHUB_TOKEN para publicar releases e tags.'
@@ -57,3 +66,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           npm_token: ${{ secrets.NPM_TOKEN }}
           debug: ${{ inputs.debug }}
+          simulate_release: ${{ inputs.simulate_release }}
