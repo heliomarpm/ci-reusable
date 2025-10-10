@@ -30,10 +30,10 @@ on:
         default: 'npm test -- --coverage'
         type: string
 
-    secrets:
-      NPM_TOKEN:
-        description: 'Token para autenticação privada, se necessário.'
-        required: false
+    # secrets:
+    #   NPM_TOKEN:
+    #     description: 'Token para autenticação privada, se necessário.'
+    #     required: false
 
 jobs:
   run_tests:

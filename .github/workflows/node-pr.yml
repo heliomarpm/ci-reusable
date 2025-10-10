@@ -15,10 +15,10 @@ on:
         required: false
         default: 'develop'
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        description: 'Token GITHUB_TOKEN para permissões de PR.'
-        required: true
+    # secrets:
+    #   GITHUB_TOKEN:
+    #     description: 'Token GITHUB_TOKEN para permissões de PR.'
+    #     required: true
 
 jobs:
   create_or_update_pr:

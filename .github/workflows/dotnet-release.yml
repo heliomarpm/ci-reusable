@@ -20,10 +20,10 @@ on:
         required: false
         default: 'false'
         type: string
-    secrets:
-      GITHUB_TOKEN:
-        description: 'Token GITHUB_TOKEN para publicar releases e tags.'
-        required: true
+    # secrets:
+    #   GITHUB_TOKEN:
+    #     description: 'Token GITHUB_TOKEN para publicar releases e tags.'
+    #     required: true
 
 jobs:
   run_semantic_release:
