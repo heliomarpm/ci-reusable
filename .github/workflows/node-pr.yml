@@ -36,7 +36,7 @@ jobs:
           path: coverage # O local onde foi publicado no test.yml
 
       - name: 🤖 Criar ou Atualizar Pull Request
-        uses: ./.github/workflows/actions/common/pr
+        uses: ./../.github/workflows/actions/common/pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
