@@ -35,7 +35,7 @@ on:
       #   required: true
       NPM_TOKEN:
         description: 'Token para autenticação no NPM e GitHub Packages.'
-        required: true
+        required: false
 
 jobs:
   run_semantic_release:
@@ -64,6 +64,6 @@ jobs:
         uses: ./.github/workflows/actions/common/semantic-release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          npm_token: ${{ secrets.NPM_TOKEN }}
+          npm_token: ${{ secrets.NPM_TOKEN || '' }}
           debug: ${{ inputs.debug }}
           simulate_release: ${{ inputs.simulate_release }}
