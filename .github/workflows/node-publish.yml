@@ -10,21 +10,31 @@ on:
         required: false
         default: '20.x'
         type: string
+
       package_manager:
         description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
         required: false
         default: 'npm'
         type: string
+
       publish_command:
         description: 'Comando para publicar o pacote.'
         required: false
         default: 'npm publish'
         type: string
+
       registry_url:
         description: 'URL do registry (e.g., https://npm.pkg.github.com/OWNER).'
         required: false
         default: 'https://registry.npmjs.org'
         type: string
+
+      simulate_publish:
+        description: 'Simular publicação para testes (e.g., true, false).'
+        required: false
+        default: false
+        type: boolean
+
     secrets:
       NPM_TOKEN:
         description: 'Token para autenticação no registry (NPM ou GitHub Packages).'
@@ -54,7 +64,27 @@ jobs:
       # - name: 🏗️ Rodar Build
       #   run: npm run build
 
+      - name: 📤 Publicar Resumo de Cobertura
+        # Assume que o comando de teste gera um arquivo coverage/coverage-summary.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: coverage/coverage-summary.json
+          retention-days: 1
+    
+      - name: ⬇️ Simulando publicação
+        if: ${{ inputs.simulate_publish == true }}
+        run: echo "Simulando publicação"
+
+      # - name: 📝 Mover Resumo de Cobertura (JSON)
+      #   # Move o arquivo gerado pelo Coverlet (geralmente coverage.json) para o nome padronizado
+      #   run: |
+      #     mkdir -p coverage
+      #     find coverage -name 'coverage.json' -exec mv {} coverage/coverage-summary.json \;
+
       - name: 🚀 Publicar Pacote
+        if: ${{ inputs.simulate_publish == false }}
         run: ${{ inputs.publish_command }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      

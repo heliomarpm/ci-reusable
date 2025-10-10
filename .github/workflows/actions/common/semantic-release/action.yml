@@ -11,8 +11,7 @@ inputs:
   github_token:
     description: 'GITHUB_TOKEN para criar releases e tags.'
     required: true
-    default: '${{ secrets.GITHUB_TOKEN }}'    
-
+    
   npm_token:
     description: 'NPM_TOKEN para publicar no NPM (opcional, mas recomendado).'
     required: false
