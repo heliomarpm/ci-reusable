@@ -16,7 +16,7 @@ on:
         default: 'develop'
         type: string
     secrets:
-      GITHUB_TOKEN:
+      PR_TOKEN:
         description: 'Token GITHUB_TOKEN para permissões de PR.'
         required: true
 
@@ -44,7 +44,7 @@ jobs:
           repository: heliomarpm/ci-reusable # Seu repositório de templates
           ref: 'main' # ${{ github.ref }} # Mantém a referência da branch de chamada
           path: templates-repo
-          token: ${{ secrets.GITHUB_TOKEN }} # Necessário se o repositório for privado
+          token: ${{ secrets.PR_TOKEN }} # Necessário se o repositório for privado
 
       # 3. ⭐️ CORREÇÃO: Instalar as dependências da Action PR ⭐️
       - name: 📥 Instalar Dependências da Action PR
@@ -62,7 +62,7 @@ jobs:
       - name: 🤖 Criar ou Atualizar Pull Request
         uses: ./templates-repo/.github/workflows/actions/common/pr
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PR_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
           head_branch: ${{ inputs.head_branch }}
           coverage_summary_path: coverage/coverage-summary.json
