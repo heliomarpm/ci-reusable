@@ -18,13 +18,13 @@ inputs:
   pr_title:
     description: 'Título do Pull Request.'
     required: false
-    default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'
-    # default: 'Automatic Merge from CI Template' 
+    default: null
+    # default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'    
 
   coverage_summary_path:
     description: 'Caminho para o coverage-summary.json (opcional).'
     required: false
-    default: ''
+    default: null
 
 runs:
   using: 'node20'
