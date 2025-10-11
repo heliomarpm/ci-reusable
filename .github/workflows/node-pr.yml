@@ -26,8 +26,20 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: ⬇️ Checkout do Código
+      # 1. Checkout do Repositório Consumidor
+      # Necessário para baixar artefatos e garantir que estamos no repo correto.
+      - name: ⬇️ Checkout do Código Consumidor
         uses: actions/checkout@v4
+
+      # 2. Checkout do Repositório de Templates (Onde a Action 'pr' vive)
+      # ESSENCIAL: Clonamos o repositório 'ci-reusable' em uma subpasta 'templates-repo'
+      - name: ⬇️ Checkout do Repositório de Templates (Actions)
+        uses: actions/checkout@v4
+        with:
+          repository: heliomarpm/ci-reusable # Seu repositório de templates
+          ref: ${{ github.ref }} # Mantém a referência da branch de chamada
+          path: templates-repo # Onde o conteúdo do ci-reusable será clonado
+          token: ${{ secrets.GITHUB_TOKEN }} # Necessário se o repositório for privado
 
       - name: 📥 Baixar Resumo de Cobertura (Opcional)
         uses: actions/download-artifact@v4
@@ -36,7 +48,7 @@ jobs:
           path: coverage # O local onde foi publicado no test.yml
 
       - name: 🤖 Criar ou Atualizar Pull Request
-        uses: ./.github/workflows/actions/common/pr
+        uses: ./../.github/workflows/actions/common/pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
