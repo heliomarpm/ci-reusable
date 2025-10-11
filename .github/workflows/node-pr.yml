@@ -26,10 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # Definimos a variável de ambiente para o caminho da Action para manter a consistência
-      - name: ⚙️ Definir Caminho da Action
-        run: echo "PR_ACTION_PATH=templates-repo/.github/workflows/actions/common/pr" >> $GITHUB_ENV
-
       # 1. Checkout do Repositório Consumidor
       # Necessário para baixar artefatos e garantir que estamos no repo correto.
       - name: ⬇️ Checkout do Código Consumidor
@@ -49,7 +45,7 @@ jobs:
       - name: 📥 Instalar Dependências da Action PR
         run: npm install
         # Entra no diretório da action e executa 'npm install'
-        working-directory: ${{ env.PR_ACTION_PATH }}
+        working-directory: templates-repo/.github/workflows/actions/common/pr
 
       - name: 📥 Baixar Resumo de Cobertura (Opcional)
         uses: actions/download-artifact@v4
@@ -58,7 +54,7 @@ jobs:
           path: coverage # O local onde foi publicado no test.yml
 
       - name: 🤖 Criar ou Atualizar Pull Request
-        uses: ./${{ env.PR_ACTION_PATH }}
+        uses: ./templates-repo/.github/workflows/actions/common/pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
