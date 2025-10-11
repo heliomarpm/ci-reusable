@@ -24,7 +24,7 @@ inputs:
   coverage_summary_path:
     description: 'Caminho para o coverage-summary.json (opcional).'
     required: false
-    default: null
+    default: ''
 
 runs:
   using: 'node20'
