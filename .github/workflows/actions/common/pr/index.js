@@ -39,6 +39,7 @@ async function run() {
         let coverageSummary = 'Não foi possível carregar o resumo de cobertura.';
         try {
             if (coveragePath && fs.existsSync(coveragePath)) {
+                core.info(`📊 Processando resumo de cobertura em: ${coveragePath}`);
                 const summaryJson = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
                 coverageSummary = formatCoverage(summaryJson);
             } else if (coveragePath) {
