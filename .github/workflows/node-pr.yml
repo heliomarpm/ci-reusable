@@ -10,11 +10,20 @@ on:
         required: false
         default: 'main'
         type: string
+
       head_branch:
         description: 'Branch de origem do PR (e.g., develop).'
         required: false
         default: 'develop'
         type: string
+
+      pr_title:
+        description: 'Título do Pull Request.'
+        required: false
+        type: string
+        default: null
+        # default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'
+
     secrets:
       GH_TOKEN:
         description: 'Token GITHUB_TOKEN para permissões de PR.'
@@ -65,4 +74,5 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
           head_branch: ${{ inputs.head_branch }}
+          pr_title: ${{ inputs.pr_title }}
           coverage_summary_path: coverage/coverage-summary.json
