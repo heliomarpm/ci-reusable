@@ -37,8 +37,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: heliomarpm/ci-reusable # Seu repositório de templates
-          ref: ${{ github.ref }} # Mantém a referência da branch de chamada
-          path: templates-repo # Onde o conteúdo do ci-reusable será clonado
+          ref: 'main' # ${{ github.ref }} # Mantém a referência da branch de chamada
+          path: template-repo
           token: ${{ secrets.GITHUB_TOKEN }} # Necessário se o repositório for privado
 
       - name: 📥 Baixar Resumo de Cobertura (Opcional)
@@ -48,7 +48,7 @@ jobs:
           path: coverage # O local onde foi publicado no test.yml
 
       - name: 🤖 Criar ou Atualizar Pull Request
-        uses: ./../.github/workflows/actions/common/pr
+        uses: ./template-repo/.github/workflows/actions/common/pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
