@@ -29,7 +29,7 @@ async function run() {
         
         const octokit = github.getOctokit(token);
         const { owner, repo } = github.context.repo;
-        const templatePath = path.join(__dirname, 'pull_request_template.md');
+        const templatePath = path.join(__dirname, 'pr_template.md');
         let bodyTemplate = fs.readFileSync(templatePath, 'utf8');
 
         // Substituir variáveis de branch no template
