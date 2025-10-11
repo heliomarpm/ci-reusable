@@ -38,20 +38,21 @@ jobs:
         with:
           repository: heliomarpm/ci-reusable # Seu repositório de templates
           ref: 'main' # ${{ github.ref }} # Mantém a referência da branch de chamada
-          path: template-repo
+          path: templates-repo
           token: ${{ secrets.GITHUB_TOKEN }} # Necessário se o repositório for privado
 
       # 3. ⭐️ CORREÇÃO: Instalar as dependências da Action PR ⭐️
       - name: 📥 Instalar Dependências da Action PR
         run: npm install
         # Entra no diretório da action e executa 'npm install'
-        working-directory: template-repo/.github/workflows/actions/common/pr
+        working-directory: templates-repo/.github/workflows/actions/common/pr
 
       - name: 📥 Baixar Resumo de Cobertura (Opcional)
         uses: actions/download-artifact@v4
         with:
           name: coverage-summary
           path: coverage # O local onde foi publicado no test.yml
+        continue-on-error: true 
 
       - name: 🤖 Criar ou Atualizar Pull Request
         uses: ./templates-repo/.github/workflows/actions/common/pr
