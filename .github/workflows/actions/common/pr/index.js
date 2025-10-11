@@ -25,7 +25,7 @@ async function run() {
         const head = core.getInput('head_branch', { required: true });
         const base = core.getInput('base_branch', { required: true });
         const title = core.getInput('pr_title') || `🔀 ${head} → ${base}: ${new Date().toISOString().substring(0, 10)}`;
-        const coveragePath = core.getInput('coverage_summary_path');
+        const coveragePath = core.getInput('coverage_summary_path')||'';
         
         const octokit = github.getOctokit(token);
         const { owner, repo } = github.context.repo;
