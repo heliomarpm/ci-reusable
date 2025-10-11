@@ -15,16 +15,16 @@ on:
         required: false
         default: 'develop'
         type: string
-    # secrets:
-    #   GITHUB_TOKEN:
-    #     description: 'Token GITHUB_TOKEN para permissões de PR.'
-    #     required: true
+    secrets:
+      GITHUB_TOKEN:
+        description: 'Token GITHUB_TOKEN para permissões de PR.'
+        required: true
 
 permissions:
   contents: write       # Necessário para operações gerais de escrita (embora o PR use o API, é bom para a Action)
   pull-requests: write  # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
   actions: write
-  
+
 jobs:
   create_or_update_pr:
     name: Criar/Atualizar PR (develop -> main)
