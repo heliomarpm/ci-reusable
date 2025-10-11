@@ -41,6 +41,12 @@ jobs:
           path: template-repo
           token: ${{ secrets.GITHUB_TOKEN }} # Necessário se o repositório for privado
 
+      # 3. ⭐️ CORREÇÃO: Instalar as dependências da Action PR ⭐️
+      - name: 📥 Instalar Dependências da Action PR
+        run: npm install
+        # Entra no diretório da action e executa 'npm install'
+        working-directory: templates-repo/.github/workflows/actions/common/pr
+
       - name: 📥 Baixar Resumo de Cobertura (Opcional)
         uses: actions/download-artifact@v4
         with:
