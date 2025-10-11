@@ -37,7 +37,7 @@ jobs:
 
       - name: 🤖 Criar ou Atualizar Pull Request
         # Reutiliza a action comum
-        uses: ./.github/workflows/actions/common/pr
+        uses: .github/workflows/actions/common/pr
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           base_branch: ${{ inputs.base_branch }}
