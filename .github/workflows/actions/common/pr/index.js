@@ -41,7 +41,14 @@ async function run() {
             if (coveragePath && fs.existsSync(coveragePath)) {
                 core.info(`📊 Processando resumo de cobertura em: ${coveragePath}`);
                 const summaryJson = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
-                coverageSummary = formatCoverage(summaryJson);
+                
+                // ⭐️ CORREÇÃO: Verificação da estrutura do JSON para evitar "Cannot read properties of undefined" ⭐️
+                if (summaryJson && summaryJson.total && summaryJson.total.lines) {
+                    coverageSummary = formatCoverage(summaryJson);
+                } else {
+                    core.warning('O arquivo JSON de cobertura está malformado ou incompleto (faltando a chave "total.lines").');
+                    coverageSummary = '*O resumo de cobertura está malformado ou incompleto.*';
+                }
             } else if (coveragePath) {
                 core.warning(`Arquivo de resumo de cobertura não encontrado em: ${coveragePath}`);
                 coverageSummary = '*Nenhum resumo de cobertura encontrado (arquivo não existe).*';
@@ -49,11 +56,14 @@ async function run() {
                 coverageSummary = '*Caminho para o resumo de cobertura não foi especificado.*';
             }
         } catch (error) {
-            core.setFailed(`Erro ao processar o JSON de cobertura: ${error.message}`);
+            // core.setFailed(`Erro ao processar o JSON de cobertura: ${error.message}`);
+            core.warning(`Erro ao ler ou parsear o JSON de cobertura: ${error.message}`);
+            coverageSummary = `*Erro ao processar o arquivo de cobertura: ${error.message}.*`;
         }
 
         // Injetar o resumo de cobertura no corpo
-        const body = bodyTemplate.replace(/[^]*?/s, coverageSummary);
+        // const body = bodyTemplate.replace(/[^]*?/s, coverageSummary);
+        const body = bodyTemplate.replace(/<!-- COBERTURA_SUMMARY_PLACEHOLDER -->[^]*?<!-- COBERTURA_SUMMARY_PLACEHOLDER -->/s, coverageSummary);
 
         // 2. Tentar encontrar um PR existente
         const { data: pullRequests } = await octokit.rest.pulls.list({
@@ -97,6 +107,7 @@ async function run() {
 
     } catch (error) {
         // Ignora o erro se as branches forem idênticas (base == head) ou não houver commits
+        // Garantindo que a Action falhe apenas por erros críticos (e.g., token, API)
         if (error.message.includes('No commits between') || error.message.includes('A pull request already exists')) {
             core.info(`⚠️ Ação de PR ignorada: ${error.message}`);
         } else {
