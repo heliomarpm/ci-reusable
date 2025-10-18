@@ -37,8 +37,11 @@ on:
 
     secrets:
       NPM_TOKEN:
-        description: 'Token para autenticação no registry (NPM ou GitHub Packages).'
+        description: 'Token para publish no registry do NPM.'
         required: true
+      GH_TOKEN:
+        description: 'Token para publish no registry (GitHub Packages).'
+        required: false
 
 jobs:
   publish_package:
@@ -65,12 +68,14 @@ jobs:
       #   run: npm run build
 
       - name: 📤 Publicar Resumo de Cobertura
-        # Assume que o comando de teste gera um arquivo coverage/coverage-summary.json
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-summary
-          path: coverage/coverage-summary.json
-          retention-days: 1
+          name: coverage-report
+          path: |
+            coverage-badge.json
+            coverage/coverage-summary.json
+            coverage/lcov-report
+          retention-days: 3
     
       - name: ⬇️ Simulando publicação
         if: ${{ inputs.simulate_publish == true }}

@@ -27,13 +27,8 @@ on:
       test_command:
         description: 'Comando para executar testes e gerar cobertura.'
         required: false
-        default: 'npm test -- --coverage'
+        default: 'npm test -- --no-watch --reporter=verbose --coverage --outputFile=coverage/coverage-summary.json'
         type: string
-
-    # secrets:
-    #   NPM_TOKEN:
-    #     description: 'Token para autenticação privada, se necessário.'
-    #     required: false
 
 jobs:
   run_tests:
