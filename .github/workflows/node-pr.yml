@@ -118,7 +118,19 @@ jobs:
           echo "" >> pr_body.md
 
           echo "---" >> pr_body.md
-          echo "### 📋 Checklist da entrega" >> pr_body.md
+          echo "### ✅ Tipo de Mudanças" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "**Marque as opções que se aplicam**:" >> pr_body.md
+          echo "- [ ] 🐛 Correção de bug" >> pr_body.md
+          echo "- [ ] 🚀 Novo recurso" >> pr_body.md
+          echo "- [ ] ⚠️ Mudanças significativas" >> pr_body.md
+          echo "- [ ] 🧹 Melhoria ou refatoração de código" >> pr_body.md
+          echo "- [ ] 📝 Atualização da documentação" >> pr_body.md
+          echo "- [ ] 🔧 Outros (por favor, descreva abaixo)" >> pr_body.md
+          echo "" >> pr_body.md
+          
+          echo "---" >> pr_body.md
+          echo "### 📋 Checklist da Entrega" >> pr_body.md
           echo "" >> pr_body.md
           echo "**Desenvolvedor**:" >> pr_body.md
           echo "- [ ] Confirmo que os testes passaram." >> pr_body.md
@@ -126,6 +138,7 @@ jobs:
           echo "" >> pr_body.md          
           echo "**Revisor**:" >> pr_body.md
           echo "- [ ] O código segue os padrões do projeto." >> pr_body.md
+          echo "- [ ] A cobertura de testes mantém os limites estabelecidos." >> pr_body.md
           echo "- [ ] A funcionalidade está correta." >> pr_body.md
 
           # Passa o título corrigido para o ambiente para uso posterior
