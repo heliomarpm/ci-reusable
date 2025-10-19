@@ -109,7 +109,7 @@ jobs:
           echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md
 
           echo "### 📊 Resultado da Cobertura de Testes" >> pr_body.md
-          echo "\`\`\`" >> pr_body.md
+          echo "\`\`\`cmd" >> pr_body.md
           echo "$COV_TABLE" >> pr_body.md
           echo "\`\`\`" >> pr_body.md
           echo "---" >> pr_body.md
