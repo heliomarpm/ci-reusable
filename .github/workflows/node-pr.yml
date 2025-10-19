@@ -84,7 +84,7 @@ jobs:
 
       # 6. Instalar as dependências da Action PR
       - name: 📥 Instalar Dependências da Action PR
-        run: npm ci
+        run: npm install
         # Entra no diretório da action e executa 'npm install'
         working-directory: templates-repo/.github/workflows/actions/common/pr
 
