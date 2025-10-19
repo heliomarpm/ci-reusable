@@ -24,10 +24,10 @@ on:
         default: null
         # default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'
 
-      test_coverage_command: 
-        description: 'Comando para executar testes e garantir que o coverage-summary seja gerado para o corpo do PR.'
+      test_coverage_command:
+        description: "Comando para executar testes e garantir que o coverage-summary seja gerado para o corpo do PR."
         required: false
-        default: 'npm test -- --coverage --no-watch'
+        default: "npm test -- --coverage --no-watch"
         type: string
 
       coverage_summary_path:
@@ -47,9 +47,9 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write       # Necessário para operações gerais de escrita
-      pull-requests: write  # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
-      actions: read         # read para o contexto
+      contents: write # Necessário para operações gerais de escrita
+      pull-requests: write # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
+      actions: read # read para o contexto
 
     steps:
       - name: ⬇️ Checkout do Código Consumidor
@@ -76,7 +76,7 @@ jobs:
           # O 'gh auth status' verifica se a autenticação funcionou
           # echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token --hostname github.com
           gh auth setup-git
-          
+
           # Garante que as labels existam (usando || true para não falhar se a label já existir)
           gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
           # gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
@@ -98,11 +98,11 @@ jobs:
 
           # Extrai a tabela de cobertura do Jest (assumindo que Jest é o runner)
           COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
-          
+
           # Cria o corpo do PR
           echo "## 🚀 Pull Request Automatizado" > pr_body.md
           echo "" >> pr_body.md
-          echo "Este Pull Request promove as alterações da branch `${{ inputs.head_branch  }}` para a branch `${{ inputs.base_branch  }}`." >> pr_body.md
+          echo "Este Pull Request promove as alterações da branch \`${{ inputs.head_branch  }}\` para a branch \`${{ inputs.base_branch  }}\`." >> pr_body.md
           echo "" >> pr_body.md
           echo "---" >> pr_body.md
           echo "### 📋 Resumo das Mudanças" >> pr_body.md
@@ -123,7 +123,7 @@ jobs:
           echo "**Revisor**:" >> pr_body.md
           echo "- [ ] O código segue os padrões do projeto." >> pr_body.md
           echo "- [ ] A funcionalidade está correta." >> pr_body.md
-         
+
           # Passa o título corrigido para o ambiente para uso posterior
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
 
