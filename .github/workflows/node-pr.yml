@@ -69,7 +69,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/ci-reusable # Assume o mesmo owner, mas o repositório de templates
-          path: ./.github/workflows/actions/common/pr # Clonado em uma subpasta
+          path: pr-template-source 
           ref: main # Usar a branch estável do template
           token: ${{ secrets.GH_TOKEN }} # Necessário para acesso em repositórios privados
 
@@ -110,11 +110,17 @@ jobs:
           # Extrai a porcentagem de cobertura de linhas (Assumindo formato Jest)
           COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $5}' | tr -d '%')
 
+          # Garante que COV_LINE_PCT seja um número ou 0 para evitar o erro 'integer expression expected'
+          if ! [[ "$COV_LINE_PCT" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+            COV_LINE_PCT=0
+          fi
+
           # Define o limite mínimo
           MIN_PCT=${{ inputs.min_coverage_pct }}
 
           # Avalia o limite e define variáveis de status
-          if [ -z "$COV_LINE_PCT" ] || [ "$COV_LINE_PCT" -lt "$MIN_PCT" ]; then
+          # if [ -z "$COV_LINE_PCT" ] || [ "$COV_LINE_PCT" -lt "$MIN_PCT" ]; then
+          if [ -z "$COV_LINE_PCT" ] || (( $(echo "$COV_LINE_PCT < $MIN_PCT" | bc -l) )); then
             IS_COVERAGE_OK=false
             STATUS_EMOJI="🔴 FALHA - Abaixo de ${MIN_PCT}%"
             STATUS_LABEL="coverage-failed"
@@ -136,12 +142,12 @@ jobs:
           COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
 
           # Monta o corpo do PR lendo o template e substituindo placeholders          
-          cp ./.github/workflows/actions/common/pr/pr_template.md pr_body.md
+          cp pr-template-source/.github/workflows/actions/common/pr/pr_template.md pr_body.md
 
           # Substitui os placeholders de linha única no pr_body.md (usando cp temporário para evitar falhas do sed/awk)
           sed -i "s|<!-- STATUS_EMOJI_PLACEHOLDER -->|$STATUS_EMOJI|g" pr_body.md
           sed -i "s|<!-- COV_PCT_PLACEHOLDER -->|$COV_LINE_PCT|g" pr_body.md
-          sed -i "s|s|<!-- MIN_PCT_PLACEHOLDER -->|$MIN_PCT|g" pr_body.md
+          sed -i "s|<!-- MIN_PCT_PLACEHOLDER -->|$MIN_PCT|g" pr_body.md
 
           # 3. Injeta a COV_TABLE no bloco de codefence
           # Localiza a linha do placeholder e a substitui pelo conteúdo da tabela.
@@ -155,8 +161,8 @@ jobs:
               }
           ' pr_body.md > pr_body_final.md
 
-          # 4. Finaliza a preparação
-          mv pr_body_final.md pr_body.md
+          # Remove a linha do placeholder da tabela e finaliza
+          grep -v '<!-- COVERAGE_TABLE_PLACEHOLDER -->' pr_body_final.md > pr_body.md
 
           # Passa variáveis importantes para o ambiente para o próximo step
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
