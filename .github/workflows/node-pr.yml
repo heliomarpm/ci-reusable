@@ -145,6 +145,8 @@ jobs:
           cp pr-template-source/.github/workflows/actions/common/pr/pr_template.md pr_body.md
 
           # Substitui os placeholders de linha única no pr_body.md (usando cp temporário para evitar falhas do sed/awk)
+          sed -i "s|<!-- HEAD_BRANCH_PLACEHOLDER -->|${{ inputs.head_branch }}|g" pr_body.md
+          sed -i "s|<!-- BASE_BRANCH_PLACEHOLDER -->|${{ inputs.base_branch }}|g" pr_body.md          
           sed -i "s|<!-- STATUS_EMOJI_PLACEHOLDER -->|$STATUS_EMOJI|g" pr_body.md
           sed -i "s|<!-- COV_PCT_PLACEHOLDER -->|$COV_LINE_PCT|g" pr_body.md
           sed -i "s|<!-- MIN_PCT_PLACEHOLDER -->|$MIN_PCT|g" pr_body.md

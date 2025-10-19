@@ -1,6 +1,6 @@
 ## 🚀 Pull Request Automatizado
 
-Este Pull Request promove as alterações da branch ${{ inputs.head_branch }} para a branch ${{ inputs.base_branch }} (Merge em ${{ inputs.base_branch }}).
+Este Pull Request promove as alterações da branch `<!-- HEAD_BRANCH_PLACEHOLDER -->` para a branch `<!-- BASE_BRANCH_PLACEHOLDER -->`.
 
 ---
 ### 🚨 Status de Qualidade: <!-- STATUS_EMOJI_PLACEHOLDER -->
@@ -33,7 +33,7 @@ Todos os commits entre as branches foram incluídos. Por favor, revise as altera
 **Desenvolvedor:**
 - [ ] Confirmo que os testes passaram.
 - [ ] Confirmo que a documentação foi atualizada.
-- [ ] 
+  
 **Revisor:**
 - [ ] O código segue os padrões do projeto.
 - [ ] A cobertura de testes atende ao limite de <!-- MIN_PCT_PLACEHOLDER -->%.
