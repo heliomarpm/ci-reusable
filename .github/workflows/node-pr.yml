@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: . # Mantem na raiz conforme foi publicado no node-test.yml
+          path: coverage # Necessário conforme foi publicado no node-test.yml
           run-id: ${{ github.run_id }}  # Força a Action a procurar o artefato nesta execução
           github-token: ${{ secrets.GH_TOKEN }}
         continue-on-error: true 
@@ -77,4 +77,4 @@ jobs:
           base_branch: ${{ inputs.base_branch }}
           head_branch: ${{ inputs.head_branch }}
           pr_title: ${{ inputs.pr_title }}
-          coverage_summary_path: coverage/coverage-summary.json
+          coverage_summary_path: coverage-summary.json
