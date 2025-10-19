@@ -24,10 +24,10 @@ on:
         default: null
         # default: 'Merge Automático: ${{ github.ref_name }} para ${{ inputs.base_branch }}'
 
-      report_coverage_command:
-        description: "Comando para executar testes e garantir que o coverage/coverage-summary.json seja gerado."
+      test_coverage_command: 
+        description: 'Comando para executar testes e garantir que o coverage-summary seja gerado para o corpo do PR.'
         required: false
-        default: "npm test -- --coverage --outputFile=coverage/coverage-summary.json"
+        default: 'npm test -- --coverage --no-watch'
         type: string
 
       coverage_summary_path:
@@ -41,68 +41,93 @@ on:
         description: "Token GITHUB_TOKEN para permissões de PR."
         required: true
 
-permissions:
-  contents: write # Necessário para operações gerais de escrita (embora o PR use o API, é bom para a Action)
-  pull-requests: write # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
-  actions: write
-
 jobs:
   create_or_update_pr:
     name: Criar/Atualizar PR (develop -> main)
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write       # Necessário para operações gerais de escrita
+      pull-requests: write  # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
+      actions: read         # read para o contexto
+
     steps:
-      # 1. Checkout do Repositório Consumidor
-      # Necessário para baixar artefatos e garantir que estamos no repo correto.
       - name: ⬇️ Checkout do Código Consumidor
         uses: actions/checkout@v4
+        with:
+          # Necessário para evitar falhas do gh CLI em repositórios grandes
+          fetch-depth: 0
 
-      # 2. Setup Node.js (necessário para NPM e para rodar a Action PR)
-      - name: ⚙️ Configurar Node.js 20.x
+      - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: "20.x"
           cache: "npm"
 
-      # 3. Instalar Dependências (do projeto consumidor)
       - name: 📥 Instalar Dependências do Projeto Consumidor
         run: npm install
 
-      # 4. Reexecutar Testes e Gerar Cobertura (Garante que o JSON está no local certo)
-      - name: 🧪 Gerar Resumo de Cobertura (Localmente)
-        run: ${{ inputs.report_coverage_command }}
 
-      # 5. Checkout do Repositório de Templates (Onde a Action 'pr' vive)
-      # ESSENCIAL: Clonamos o repositório 'ci-reusable' em uma subpasta 'templates-repo'
-      - name: ⬇️ Checkout do Repositório de Templates (Actions)
-        uses: actions/checkout@v4
-        with:
-          repository: heliomarpm/ci-reusable # Seu repositório de templates
-          ref: "main" # ${{ github.ref }} # Mantém a referência da branch de chamada
-          path: templates-repo
-          token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
+      - name: 🔐 Instalar e Autenticar GitHub CLI
+        run: |
+          sudo apt-get update && sudo apt-get install -y gh
+          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+          gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
+          gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # Passa o token para o gh
 
-      # 6. Instalar as dependências da Action PR
-      - name: 📥 Instalar Dependências da Action PR
-        run: npm install
-        # Entra no diretório da action e executa 'npm install'
-        working-directory: templates-repo/.github/workflows/actions/common/pr
 
-      # - name: 📥 Baixar Resumo de Cobertura (Opcional)
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: coverage-report
-      #     path: . # Necessário conforme foi publicado no node-test.yml
-      #     run-id: ${{ github.run_id }} # Força a Action a procurar o artefato nesta execução
-      #     github-token: ${{ secrets.GH_TOKEN }}
-      #   continue-on-error: true
+      - name: 📊 Gerar Cobertura e Body do PR
+        # Executa testes e salva a saída em um arquivo temporário
+        run: |
+          # Executa o comando de teste fornecido pelo input
+          ${{ inputs.test_coverage_command }} > coverage-report.txt 2>&1 || true
 
-      # 7. Criar ou Atualizar Pull Request
+          # Formata o título com data (se o input for o default)
+          PR_TITLE="${{ inputs.pr_title }}"
+          if [[ "$PR_TITLE" == "" ]]; then
+            PR_TITLE="🔀 ${{ inputs.head_branch }} → ${{ inputs.base_branch }}: $(date +'%Y-%m-%d')"
+          fi
+
+          # Extrai a tabela de cobertura do Jest (assumindo que Jest é o runner)
+          COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
+          
+          # Cria o corpo do PR
+          echo "## 🚀 Pull Request Automatizado" > pr_body.md
+          echo "" >> pr_body.md
+          echo "Este PR integra **${{ inputs.head_branch }}** em **${{ inputs.base_branch }}**." >> pr_body.md
+          echo "---" >> pr_body.md
+          echo "### 📊 Resumo da Cobertura" >> pr_body.md
+          echo "\`\`\`" >> pr_body.md
+          echo "$COV_TABLE" >> pr_body.md
+          echo "\`\`\`" >> pr_body.md
+          echo "---" >> pr_body.md
+          
+          # Passa o título corrigido para o ambiente para uso posterior
+          echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+
       - name: 🤖 Criar ou Atualizar Pull Request
-        uses: ./templates-repo/.github/workflows/actions/common/pr
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          base_branch: ${{ inputs.base_branch }}
-          head_branch: ${{ inputs.head_branch }}
-          pr_title: ${{ inputs.pr_title }}
-          coverage_summary_path: ${{ inputs.coverage_summary_path }}
+        run: |
+          # Tenta encontrar um PR existente
+          PR_NUMBER=$(gh pr list --base ${{ inputs.base_branch }} --head ${{ inputs.head_branch }} --json number --jq '.[0].number')
+
+          if [ -z "$PR_NUMBER" ]; then
+            # Se não houver PR, cria uma nova
+            echo "Nenhuma PR encontrada, criando nova PR..."
+            gh pr create \
+              --base ${{ inputs.base_branch }} \
+              --head ${{ inputs.head_branch }} \
+              --title "$PR_TITLE" \
+              --body-file pr_body.md \
+              --label "auto-generated,pending-review" \
+              --assignee "${{ github.actor }}"
+          else
+            # Se a PR já existir, atualiza o corpo
+            echo "Encontrado PR aberto com o número $PR_NUMBER, atualizando corpo e designados..."
+            gh pr edit $PR_NUMBER \
+              --body-file pr_body.md \
+              --add-assignee "${{ github.actor }}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
