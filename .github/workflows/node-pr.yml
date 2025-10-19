@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/ci-reusable # Assume o mesmo owner, mas o repositório de templates
-          path: pr-template-source 
+          path: pr-template-source
           ref: main # Usar a branch estável do template
           token: ${{ secrets.GH_TOKEN }} # Necessário para acesso em repositórios privados
 
@@ -116,12 +116,12 @@ jobs:
           # if [ -z "$COV_LINE_PCT" ] || [ "$COV_LINE_PCT" -lt "$MIN_PCT" ]; then
           if [ -z "$COV_LINE_PCT" ] || (( $(echo "$COV_LINE_PCT < $MIN_PCT" | bc -l) )); then
             IS_COVERAGE_OK=false
-            STATUS_EMOJI="🔴 FALHA - Abaixo de ${MIN_PCT}%"
+            STATUS_EMOJI="🔴 Abaixo de ${MIN_PCT}%"
             STATUS_LABEL="coverage-failed"
             echo "⚠️ Cobertura de Linhas ($COV_LINE_PCT%) está ABAIXO do limite mínimo ($MIN_PCT%)."
           else
             IS_COVERAGE_OK=true
-            STATUS_EMOJI="✅ SUCESSO - Acima de ${MIN_PCT}%"
+            STATUS_EMOJI="🟢 Acima de ${MIN_PCT}%"
             STATUS_LABEL="pending-review"
             echo "✅ Cobertura de Linhas ($COV_LINE_PCT%) está OK (Acima de $MIN_PCT%)."
           fi
@@ -185,7 +185,6 @@ jobs:
             # Se a PR já existir, atualiza o corpo
             echo "Encontrado PR aberto com o número $PR_NUMBER, atualizando corpo e designados..."
             gh pr edit $PR_NUMBER \
-              --title "$PR_TITLE" \
               --body-file pr_body.md \
               --add-assignee "${{ github.actor }}"
 
