@@ -6,19 +6,19 @@ on:
   workflow_call:
     inputs:
       base_branch:
-        description: 'Branch de destino do PR (e.g., main).'
+        description: "Branch de destino do PR (e.g., main)."
         required: false
-        default: 'main'
+        default: "main"
         type: string
 
       head_branch:
-        description: 'Branch de origem do PR (e.g., develop).'
+        description: "Branch de origem do PR (e.g., develop)."
         required: false
-        default: 'develop'
+        default: "develop"
         type: string
 
       pr_title:
-        description: 'Título do Pull Request.'
+        description: "Título do Pull Request."
         required: false
         type: string
         default: null
@@ -26,19 +26,19 @@ on:
 
     secrets:
       GH_TOKEN:
-        description: 'Token GITHUB_TOKEN para permissões de PR.'
+        description: "Token GITHUB_TOKEN para permissões de PR."
         required: true
 
 permissions:
-  contents: write       # Necessário para operações gerais de escrita (embora o PR use o API, é bom para a Action)
-  pull-requests: write  # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
+  contents: write # Necessário para operações gerais de escrita (embora o PR use o API, é bom para a Action)
+  pull-requests: write # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
   actions: write
 
 jobs:
   create_or_update_pr:
     name: Criar/Atualizar PR (develop -> main)
     runs-on: ubuntu-latest
-    
+
     steps:
       # 1. Checkout do Repositório Consumidor
       # Necessário para baixar artefatos e garantir que estamos no repo correto.
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: heliomarpm/ci-reusable # Seu repositório de templates
-          ref: 'main' # ${{ github.ref }} # Mantém a referência da branch de chamada
+          ref: "main" # ${{ github.ref }} # Mantém a referência da branch de chamada
           path: templates-repo
           token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
 
@@ -65,10 +65,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: coverage # Necessário conforme foi publicado no node-test.yml
-          run-id: ${{ github.run_id }}  # Força a Action a procurar o artefato nesta execução
+          path: . # Necessário conforme foi publicado no node-test.yml
+          run-id: ${{ github.run_id }} # Força a Action a procurar o artefato nesta execução
           github-token: ${{ secrets.GH_TOKEN }}
-        continue-on-error: true 
+        continue-on-error: true
 
       - name: 🤖 Criar ou Atualizar Pull Request
         uses: ./templates-repo/.github/workflows/actions/common/pr
@@ -77,4 +77,4 @@ jobs:
           base_branch: ${{ inputs.base_branch }}
           head_branch: ${{ inputs.head_branch }}
           pr_title: ${{ inputs.pr_title }}
-          coverage_summary_path: coverage/coverage/coverage-summary.json
+          coverage_summary_path: coverage/coverage-summary.json
