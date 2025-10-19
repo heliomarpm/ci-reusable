@@ -67,6 +67,7 @@ jobs:
           name: coverage-summary
           path: coverage # O local onde foi publicado no test.yml
           run-id: ${{ github.run_id }}  # Força a Action a procurar o artefato nesta execução
+          github-token: ${{ secrets.GH_TOKEN }}
         continue-on-error: true 
 
       - name: 🤖 Criar ou Atualizar Pull Request
