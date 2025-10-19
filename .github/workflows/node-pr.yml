@@ -167,6 +167,7 @@ jobs:
         run: |
           # Tenta encontrar um PR existente
           PR_NUMBER=$(gh pr list --base ${{ inputs.base_branch }} --head ${{ inputs.head_branch }} --json number --jq '.[0].number')
+          PR_LABELS="auto-generated,$STATUS_LABEL"
 
           if [ -z "$PR_NUMBER" ]; then
             # Se não houver PR, cria uma nova
@@ -176,7 +177,7 @@ jobs:
               --head ${{ inputs.head_branch }} \
               --title "$PR_TITLE" \
               --body-file pr_body.md \
-              --label "auto-generated,pending-review" \
+              --label "$PR_LABELS" \
               --assignee "${{ github.actor }}"
           else
             # Se a PR já existir, atualiza o corpo
@@ -184,6 +185,16 @@ jobs:
             gh pr edit $PR_NUMBER \
               --body-file pr_body.md \
               --add-assignee "${{ github.actor }}"
+
+            if [ "$STATUS_LABEL" == "coverage-failed" ]; then
+              # Se falhou, adiciona a label de falha e remove a de sucesso
+              gh pr edit $PR_NUMBER --add-label "coverage-failed"
+              # gh pr edit $PR_NUMBER --remove-label "pending-review" || true
+            else
+              # Se passou, remove a label de falha e garante 'pending-review'
+              gh pr edit $PR_NUMBER --remove-label "coverage-failed" || true
+              # gh pr edit $PR_NUMBER --add-label "pending-review"
+            fi
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
