@@ -29,7 +29,7 @@ on:
         required: false
         default: "npm test -- --coverage --no-watch"
         type: string
-      
+
       min_coverage_pct:
         description: "Percentual mínimo de cobertura de linhas exigido para aprovação do status check (0-100)."
         required: false
@@ -109,10 +109,10 @@ jobs:
 
           # Extrai a porcentagem de cobertura de linhas (Assumindo formato Jest)
           COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $5}' | tr -d '%')
-          
+
           # Define o limite mínimo
           MIN_PCT=${{ inputs.min_coverage_pct }}
-          
+
           # Avalia o limite e define variáveis de status
           if [ -z "$COV_LINE_PCT" ] || [ "$COV_LINE_PCT" -lt "$MIN_PCT" ]; then
             IS_COVERAGE_OK=false
@@ -136,7 +136,7 @@ jobs:
           COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
 
           # Monta o corpo do PR lendo o template e substituindo placeholders          
-          cp pr-template-source/pr_template.md pr_body.md
+          cp ./.github/workflows/actions/common/pr/pr_template.md pr_body.md
 
           # Substitui os placeholders de linha única no pr_body.md (usando cp temporário para evitar falhas do sed/awk)
           sed -i "s|<!-- STATUS_EMOJI_PLACEHOLDER -->|$STATUS_EMOJI|g" pr_body.md
@@ -154,10 +154,10 @@ jobs:
                   print $0
               }
           ' pr_body.md > pr_body_final.md
-          
+
           # 4. Finaliza a preparação
           mv pr_body_final.md pr_body.md
-          
+
           # Passa variáveis importantes para o ambiente para o próximo step
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
           echo "STATUS_LABEL=$STATUS_LABEL" >> $GITHUB_ENV
