@@ -66,7 +66,7 @@ jobs:
 
       # 3. Instalar Dependências (do projeto consumidor)
       - name: 📥 Instalar Dependências do Projeto Consumidor
-        run: npm install
+        run: npm ci
 
       # 4. Reexecutar Testes e Gerar Cobertura (Garante que o JSON está no local certo)
       - name: 🧪 Gerar Resumo de Cobertura (Localmente)
@@ -83,10 +83,10 @@ jobs:
           token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
 
       # 6. Instalar as dependências da Action PR
-      # - name: 📥 Instalar Dependências da Action PR
-      #   run: npm install
-      #   # Entra no diretório da action e executa 'npm install'
-      #   working-directory: templates-repo/.github/workflows/actions/common/pr
+      - name: 📥 Instalar Dependências da Action PR
+        run: npm ci
+        # Entra no diretório da action e executa 'npm install'
+        working-directory: templates-repo/.github/workflows/actions/common/pr
 
       # - name: 📥 Baixar Resumo de Cobertura (Opcional)
       #   uses: actions/download-artifact@v4
