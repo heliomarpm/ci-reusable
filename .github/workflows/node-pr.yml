@@ -74,7 +74,8 @@ jobs:
         run: |
           # Autentica o gh CLI usando o GH_TOKEN
           # O 'gh auth status' verifica se a autenticação funcionou
-          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token --hostname github.com
+          # echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token --hostname github.com
+          gh auth setup-git
           
           # Garante que as labels existam (usando || true para não falhar se a label já existir)
           gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
