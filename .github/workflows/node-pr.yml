@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: coverage # O local onde foi publicado no test.yml
+          path: . # Mantem na raiz conforme foi publicado no node-test.yml
           run-id: ${{ github.run_id }}  # Força a Action a procurar o artefato nesta execução
           github-token: ${{ secrets.GH_TOKEN }}
         continue-on-error: true 
