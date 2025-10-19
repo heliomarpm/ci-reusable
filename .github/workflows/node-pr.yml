@@ -77,4 +77,4 @@ jobs:
           base_branch: ${{ inputs.base_branch }}
           head_branch: ${{ inputs.head_branch }}
           pr_title: ${{ inputs.pr_title }}
-          coverage_summary_path: coverage-summary.json
+          coverage_summary_path: coverage/coverage/coverage-summary.json
