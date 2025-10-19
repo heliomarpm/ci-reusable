@@ -79,7 +79,7 @@ jobs:
           
           # Garante que as labels existam (usando || true para não falhar se a label já existir)
           gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
-          gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
+          # gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
         env:
           # O token é necessário para os comandos 'gh'
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -102,14 +102,27 @@ jobs:
           # Cria o corpo do PR
           echo "## 🚀 Pull Request Automatizado" > pr_body.md
           echo "" >> pr_body.md
-          echo "Este PR integra **${{ inputs.head_branch }}** em **${{ inputs.base_branch }}**." >> pr_body.md
+          echo "Este Pull Request foi criado/atualizado automaticamente pelo fluxo CI/CD para integrar as mudanças da branch **`${{ inputs.head_branch  }}`** na branch **`${{ inputs.base_branch  }}`**." >> pr_body.md
           echo "---" >> pr_body.md
-          echo "### 📊 Resumo da Cobertura" >> pr_body.md
+          echo "### 📋 Resumo das Mudanças" >> pr_body.md
+          echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md
+
+          echo "### 📊 Resultado da Cobertura de Testes" >> pr_body.md
           echo "\`\`\`" >> pr_body.md
           echo "$COV_TABLE" >> pr_body.md
           echo "\`\`\`" >> pr_body.md
           echo "---" >> pr_body.md
-          
+          echo "### 📋 Checklist da entrega" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "**Desenvolvedor**:" >> pr_body.md
+          echo "- [ ] Confirmo que os testes passaram." >> pr_body.md
+          echo "- [ ] Confirmo que a documentação foi atualizada." >> pr_body.md
+
+          echo "" >> pr_body.md
+          echo "**Revisor**:" >> pr_body.md
+          echo "- [ ] O código segue os padrões do projeto." >> pr_body.md
+          echo "- [ ] A funcionalidade está correta." >> pr_body.md
+         
           # Passa o título corrigido para o ambiente para uso posterior
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
 
