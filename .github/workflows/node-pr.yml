@@ -36,12 +36,6 @@ on:
         default: 0
         type: number
 
-      coverage_summary_path:
-        description: "Caminho para o coverage-summary.json (default: coverage/coverage-summary.json)."
-        required: false
-        default: "coverage/coverage-summary.json"
-        type: string
-
     secrets:
       GH_TOKEN:
         description: "Token GITHUB_TOKEN para permissões de PR."
@@ -191,16 +185,20 @@ jobs:
             # Se a PR já existir, atualiza o corpo
             echo "Encontrado PR aberto com o número $PR_NUMBER, atualizando corpo e designados..."
             gh pr edit $PR_NUMBER \
+              --title "$PR_TITLE" \
               --body-file pr_body.md \
               --add-assignee "${{ github.actor }}"
 
             if [ "$STATUS_LABEL" == "coverage-failed" ]; then
               # Se falhou, adiciona a label de falha e remove a de sucesso
-              gh pr edit $PR_NUMBER --add-label "coverage-failed"
+              gh pr edit $PR_NUMBER \
+                --add-label "$PR_LABELS"
               # gh pr edit $PR_NUMBER --remove-label "pending-review" || true
             else
               # Se passou, remove a label de falha e garante 'pending-review'
-              gh pr edit $PR_NUMBER --remove-label "coverage-failed" || true
+              gh pr edit $PR_NUMBER \
+                --add-label "auto-generated" \
+                --remove-label "coverage-failed" || true
               # gh pr edit $PR_NUMBER --add-label "pending-review"
             fi
           fi
