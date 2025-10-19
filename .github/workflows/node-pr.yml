@@ -102,7 +102,7 @@ jobs:
           # Cria o corpo do PR
           echo "## 🚀 Pull Request Automatizado" > pr_body.md
           echo "" >> pr_body.md
-          echo "Este Pull Request promove as alterações da branch **`${{ inputs.head_branch  }}`** para a branch **`${{ inputs.base_branch  }}`**." >> pr_body.md
+          echo "Este Pull Request promove as alterações da branch `${{ inputs.head_branch  }}` para a branch `${{ inputs.base_branch  }}`." >> pr_body.md
           echo "" >> pr_body.md
           echo "---" >> pr_body.md
           echo "### 📋 Resumo das Mudanças" >> pr_body.md
