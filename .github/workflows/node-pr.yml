@@ -67,16 +67,21 @@ jobs:
       - name: 📥 Instalar Dependências do Projeto Consumidor
         run: npm install
 
+      - name: 📥 Instalar GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh
 
-      - name: 🔐 Instalar e Autenticar GitHub CLI
+      - name: 🔐 Autenticar GitHub CLI e Criar Labels
         run: |
-          sudo apt-get update && sudo apt-get install -y gh
-          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+          # Autentica o gh CLI usando o GH_TOKEN
+          # O 'gh auth status' verifica se a autenticação funcionou
+          echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token --hostname github.com
+          
+          # Garante que as labels existam (usando || true para não falhar se a label já existir)
           gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
           gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # Passa o token para o gh
-
+          # O token é necessário para os comandos 'gh'
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: 📊 Gerar Cobertura e Body do PR
         # Executa testes e salva a saída em um arquivo temporário
