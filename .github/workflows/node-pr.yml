@@ -102,7 +102,8 @@ jobs:
           # Cria o corpo do PR
           echo "## 🚀 Pull Request Automatizado" > pr_body.md
           echo "" >> pr_body.md
-          echo "Este Pull Request foi criado/atualizado automaticamente pelo fluxo CI/CD para integrar as mudanças da branch **`${{ inputs.head_branch  }}`** na branch **`${{ inputs.base_branch  }}`**." >> pr_body.md
+          echo "Este Pull Request foi criado automaticamente pelo fluxo CI/CD para integrar as mudanças da branch **`${{ inputs.head_branch  }}`** na branch **`${{ inputs.base_branch  }}`**." >> pr_body.md
+          echo "" >> pr_body.md
           echo "---" >> pr_body.md
           echo "### 📋 Resumo das Mudanças" >> pr_body.md
           echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md
