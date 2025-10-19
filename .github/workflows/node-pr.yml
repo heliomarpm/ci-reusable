@@ -29,6 +29,12 @@ on:
         required: false
         default: "npm test -- --coverage --no-watch"
         type: string
+      
+      min_coverage_pct:
+        description: "Percentual mínimo de cobertura de linhas exigido para aprovação do status check (0-100)."
+        required: false
+        default: 0
+        type: number
 
       coverage_summary_path:
         description: "Caminho para o coverage-summary.json (default: coverage/coverage-summary.json)."
@@ -58,6 +64,15 @@ jobs:
           # Necessário para evitar falhas do gh CLI em repositórios grandes
           fetch-depth: 0
 
+      # Checkout do repositório de templates para acessar o pr_template.md
+      - name: ⬇️ Checkout do Template (pr_template.md)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/ci-reusable # Assume o mesmo owner, mas o repositório de templates
+          path: ./.github/workflows/actions/common/pr # Clonado em uma subpasta
+          ref: main # Usar a branch estável do template
+          token: ${{ secrets.GH_TOKEN }} # Necessário para acesso em repositórios privados
+
       - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
@@ -80,15 +95,36 @@ jobs:
           # Garante que as labels existam (usando || true para não falhar se a label já existir)
           gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
           # gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
+          gh label create "coverage-failed" --description "Cobertura de testes abaixo do limite mínimo." --color "D93F0B" || true
         env:
           # O token é necessário para os comandos 'gh'
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: 📊 Gerar Cobertura e Body do PR
+      - name: 📊 Gerar Cobertura, Avaliar Limite e Montar o Body do PR
         # Executa testes e salva a saída em um arquivo temporário
         run: |
           # Executa o comando de teste fornecido pelo input
+          set -o pipefail
           ${{ inputs.test_coverage_command }} > coverage-report.txt 2>&1 || true
+
+          # Extrai a porcentagem de cobertura de linhas (Assumindo formato Jest)
+          COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $5}' | tr -d '%')
+          
+          # Define o limite mínimo
+          MIN_PCT=${{ inputs.min_coverage_pct }}
+          
+          # Avalia o limite e define variáveis de status
+          if [ -z "$COV_LINE_PCT" ] || [ "$COV_LINE_PCT" -lt "$MIN_PCT" ]; then
+            IS_COVERAGE_OK=false
+            STATUS_EMOJI="🔴 FALHA - Abaixo de ${MIN_PCT}%"
+            STATUS_LABEL="coverage-failed"
+            echo "⚠️ Cobertura de Linhas ($COV_LINE_PCT%) está ABAIXO do limite mínimo ($MIN_PCT%)."
+          else
+            IS_COVERAGE_OK=true
+            STATUS_EMOJI="✅ SUCESSO - Acima de ${MIN_PCT}%"
+            STATUS_LABEL="pending-review"
+            echo "✅ Cobertura de Linhas ($COV_LINE_PCT%) está OK (Acima de $MIN_PCT%)."
+          fi
 
           # Formata o título com data (se o input for o default)
           PR_TITLE="${{ inputs.pr_title }}"
@@ -99,50 +135,33 @@ jobs:
           # Extrai a tabela de cobertura do Jest (assumindo que Jest é o runner)
           COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
 
-          # Cria o corpo do PR
-          echo "## 🚀 Pull Request Automatizado" > pr_body.md
-          echo "" >> pr_body.md
-          echo "Este Pull Request promove as alterações da branch \`${{ inputs.head_branch  }}\` para a branch \`${{ inputs.base_branch  }}\`." >> pr_body.md          
-          echo "" >> pr_body.md
+          # Monta o corpo do PR lendo o template e substituindo placeholders          
+          cp pr-template-source/pr_template.md pr_body.md
 
-          echo "---" >> pr_body.md
-          echo "### 📋 Resumo das Mudanças" >> pr_body.md
-          echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md          
-          echo "" >> pr_body.md
+          # Substitui os placeholders de linha única no pr_body.md (usando cp temporário para evitar falhas do sed/awk)
+          sed -i "s|<!-- STATUS_EMOJI_PLACEHOLDER -->|$STATUS_EMOJI|g" pr_body.md
+          sed -i "s|<!-- COV_PCT_PLACEHOLDER -->|$COV_LINE_PCT|g" pr_body.md
+          sed -i "s|s|<!-- MIN_PCT_PLACEHOLDER -->|$MIN_PCT|g" pr_body.md
 
-          echo "---" >> pr_body.md
-          echo "### 📊 Resultado da Cobertura de Testes" >> pr_body.md
-          echo "\`\`\`cmd" >> pr_body.md
-          echo "$COV_TABLE" >> pr_body.md
-          echo "\`\`\`" >> pr_body.md
-          echo "" >> pr_body.md
-
-          echo "---" >> pr_body.md
-          echo "### ✅ Tipo de Mudanças" >> pr_body.md
-          echo "" >> pr_body.md
-          echo "**Marque as opções que se aplicam**:" >> pr_body.md
-          echo "- [ ] 🐛 Correção de bug" >> pr_body.md
-          echo "- [ ] 🚀 Novo recurso" >> pr_body.md
-          echo "- [ ] ⚠️ Mudanças significativas" >> pr_body.md
-          echo "- [ ] 🧹 Melhoria ou refatoração de código" >> pr_body.md
-          echo "- [ ] 📝 Atualização da documentação" >> pr_body.md
-          echo "- [ ] 🔧 Outros (por favor, comente abaixo)" >> pr_body.md
-          echo "" >> pr_body.md
+          # 3. Injeta a COV_TABLE no bloco de codefence
+          # Localiza a linha do placeholder e a substitui pelo conteúdo da tabela.
+          # Usaremos awk para garantir a substituição multi-linhas.
+          awk -v table="$COV_TABLE" '
+              /<!-- COVERAGE_TABLE_PLACEHOLDER -->/ {
+                  print table
+              }
+              !/<!-- COVERAGE_TABLE_PLACEHOLDER -->/ {
+                  print $0
+              }
+          ' pr_body.md > pr_body_final.md
           
-          echo "---" >> pr_body.md
-          echo "### 📋 Checklist da Entrega" >> pr_body.md
-          echo "" >> pr_body.md
-          echo "**Desenvolvedor**:" >> pr_body.md
-          echo "- [ ] Confirmo que os testes passaram." >> pr_body.md
-          echo "- [ ] Confirmo que a documentação foi atualizada." >> pr_body.md
-          echo "" >> pr_body.md          
-          echo "**Revisor**:" >> pr_body.md
-          echo "- [ ] O código segue os padrões do projeto." >> pr_body.md
-          echo "- [ ] A cobertura de testes mantém os limites estabelecidos." >> pr_body.md
-          echo "- [ ] A funcionalidade está correta." >> pr_body.md
-
-          # Passa o título corrigido para o ambiente para uso posterior
+          # 4. Finaliza a preparação
+          mv pr_body_final.md pr_body.md
+          
+          # Passa variáveis importantes para o ambiente para o próximo step
           echo "PR_TITLE=$PR_TITLE" >> $GITHUB_ENV
+          echo "STATUS_LABEL=$STATUS_LABEL" >> $GITHUB_ENV
+          echo "IS_COVERAGE_OK=$IS_COVERAGE_OK" >> $GITHUB_ENV
 
       - name: 🤖 Criar ou Atualizar Pull Request
         run: |
