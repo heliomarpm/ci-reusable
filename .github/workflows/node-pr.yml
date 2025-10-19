@@ -102,24 +102,28 @@ jobs:
           # Cria o corpo do PR
           echo "## 🚀 Pull Request Automatizado" > pr_body.md
           echo "" >> pr_body.md
-          echo "Este Pull Request promove as alterações da branch \`${{ inputs.head_branch  }}\` para a branch \`${{ inputs.base_branch  }}\`." >> pr_body.md
+          echo "Este Pull Request promove as alterações da branch \`${{ inputs.head_branch  }}\` para a branch \`${{ inputs.base_branch  }}\`." >> pr_body.md          
           echo "" >> pr_body.md
+
           echo "---" >> pr_body.md
           echo "### 📋 Resumo das Mudanças" >> pr_body.md
-          echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md
+          echo "Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD." >> pr_body.md          
+          echo "" >> pr_body.md
 
+          echo "---" >> pr_body.md
           echo "### 📊 Resultado da Cobertura de Testes" >> pr_body.md
           echo "\`\`\`cmd" >> pr_body.md
           echo "$COV_TABLE" >> pr_body.md
           echo "\`\`\`" >> pr_body.md
+          echo "" >> pr_body.md
+
           echo "---" >> pr_body.md
           echo "### 📋 Checklist da entrega" >> pr_body.md
           echo "" >> pr_body.md
           echo "**Desenvolvedor**:" >> pr_body.md
           echo "- [ ] Confirmo que os testes passaram." >> pr_body.md
           echo "- [ ] Confirmo que a documentação foi atualizada." >> pr_body.md
-
-          echo "" >> pr_body.md
+          echo "" >> pr_body.md          
           echo "**Revisor**:" >> pr_body.md
           echo "- [ ] O código segue os padrões do projeto." >> pr_body.md
           echo "- [ ] A funcionalidade está correta." >> pr_body.md
