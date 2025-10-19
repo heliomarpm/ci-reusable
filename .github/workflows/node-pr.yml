@@ -126,7 +126,7 @@ jobs:
           echo "- [ ] ⚠️ Mudanças significativas" >> pr_body.md
           echo "- [ ] 🧹 Melhoria ou refatoração de código" >> pr_body.md
           echo "- [ ] 📝 Atualização da documentação" >> pr_body.md
-          echo "- [ ] 🔧 Outros (por favor, descreva abaixo)" >> pr_body.md
+          echo "- [ ] 🔧 Outros (por favor, comente abaixo)" >> pr_body.md
           echo "" >> pr_body.md
           
           echo "---" >> pr_body.md
