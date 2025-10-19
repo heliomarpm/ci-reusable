@@ -53,9 +53,11 @@ jobs:
         run: ${{ inputs.test_command }}
 
       - name: 📤 Publicar Resumo de Cobertura
-        # Assume que o comando de teste gera um arquivo coverage/coverage-summary.json
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-summary
-          path: coverage/coverage-summary.json
-          retention-days: 1
+          name: coverage-report
+          path: |
+            coverage-badge.json
+            coverage/coverage-summary.json
+            coverage/lcov-report
+          retention-days: 3
