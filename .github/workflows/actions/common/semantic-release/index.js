@@ -13,15 +13,10 @@ async function run() {
     const actionDir = path.join(__dirname, '..', '..', '..', '..', '..', '.github', 'workflows', 'actions', 'common', 'semantic-release');
     const consumerRepoDir = process.cwd();
 
-    core.info('Carregando configuração do Semantic Release...', {
-      GITHUB_TOKEN, 
-      NPM_TOKEN,
-      debug,
-      simulateRelease,
-      configPath,
-      actionDir,
-      consumerRepoDir
-    });
+    core.info(`DEBUG: ${debug}`);
+    core.info(`SIMULATE_RELEASE: ${simulateRelease}`);
+    core.info(`CONFIG_PATH: ${configPath}`);
+    core.info(`CONSUMER_REPO_DIR: ${consumerRepoDir}`);
 
     // 1. Configurar Tokens
     core.exportVariable('GITHUB_TOKEN', GITHUB_TOKEN);
@@ -51,9 +46,6 @@ async function run() {
     core.info('📥 Instalando dependências e plugins do semantic-release...');
     // Instala as dependências listadas no package.json (devDependencies) da action
     await exec.exec(`npm install --prefix ${actionDir}`);
-
-    // 4. Executar semantic-release
-    core.info('🚀 Executando semantic-release...');
 
     // Caminho para o binário do semantic-release instalado na action
     const semanticReleaseBin = path.join(actionDir, 'node_modules', '.bin', 'semantic-release');
