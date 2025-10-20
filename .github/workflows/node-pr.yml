@@ -5,6 +5,18 @@ name: Node.js Auto Pull Request
 on:
   workflow_call:
     inputs:
+      node_version:
+        description: 'Versão do Node.js a ser usada (e.g., 20.x).'
+        required: false
+        default: '20.x'
+        type: string
+            
+      package_manager:
+        description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
+        required: false
+        default: 'npm'
+        type: string
+
       base_branch:
         description: "Branch de destino do PR (e.g., main)."
         required: false
@@ -70,11 +82,11 @@ jobs:
       - name: ⚙️ Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
-          cache: "npm"
+          node-version: ${{ inputs.node_version }}
+          cache: ${{ inputs.package_manager }}
 
       - name: 📥 Instalar Dependências do Projeto Consumidor
-        run: npm install
+        run: ${{ inputs.package_manager }} install
 
       - name: 📥 Instalar GitHub CLI
         run: sudo apt-get update && sudo apt-get install -y gh
