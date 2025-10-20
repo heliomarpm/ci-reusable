@@ -17,15 +17,15 @@ inputs:
     required: false
     default: null
 
-  debug:
-    description: 'Habilita logs de debug do semantic-release (--debug).'
-    required: false
-    default: 'false'
-
   config_file:
     description: 'Caminho alternativo para o release.config.js do template.'
     required: false
     default: 'release.config.js'
+
+  debug:
+    description: 'Habilita logs de debug do semantic-release (--debug).'
+    required: false
+    default: 'false'
 
   simulate_release:
     description: 'Simular release para testes (e.g., true, false).'

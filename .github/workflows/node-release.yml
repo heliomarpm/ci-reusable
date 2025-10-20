@@ -23,17 +23,17 @@ on:
         default: 'main'
         type: string
 
-      debug:
-        description: 'Habilita logs de debug do semantic-release (--debug).'
-        required: false
-        default: true
-        type: boolean
-
       config_file:
         description: 'Caminho alternativo para o release.config.js do template.'
         required: false
         default: 'release.config.js'
         type: string
+
+      debug:
+        description: 'Habilita logs de debug do semantic-release (--debug).'
+        required: false
+        default: true
+        type: boolean
 
       simulate_release:
         description: 'Simular release para testes (e.g., true, false).'
@@ -91,6 +91,6 @@ jobs:
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           npm_token: ${{ secrets.NPM_TOKEN || null}}
-          debug: ${{ inputs.debug }}
           config_file: ${{ inputs.config_file }}
+          debug: ${{ inputs.debug }}
           simulate_release: ${{ inputs.simulate_release }}
