@@ -29,6 +29,12 @@ on:
         default: false
         type: boolean
 
+      config_path:
+        description: 'Caminho alternativo para o release.config.js do template.'
+        required: false
+        default: '.github/workflows/actions/common/semantic-release/release.config.js'
+        type: string
+
       simulate_release:
         description: 'Simular release para testes (e.g., true, false).'
         required: false
@@ -74,17 +80,17 @@ jobs:
           path: templates-repo
           token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
 
-      # 6. Instalar as dependências da Action PR
+      # Entra no diretório da action e executa 'npm install'
       - name: 📥 Instalar Dependências da Action
         run: npm install
-        # Entra no diretório da action e executa 'npm install'
         working-directory: templates-repo/.github/workflows/actions/common/semantic-release
 
-      - name: 🚀 Executar Semantic Release Híbrido
-        # A action híbrida cuida da instalação e execução
-        uses: ./.github/workflows/actions/common/semantic-release
+      # A action do semantic-release cuida da instalação e execução
+      - name: 🚀 Executar Semantic Release
+        uses: ./templates-repo/.github/workflows/actions/common/semantic-release
         with:
           github_token: ${{ secrets.GH_TOKEN }}
           npm_token: ${{ secrets.NPM_TOKEN || null}}
           debug: ${{ inputs.debug }}
+          config_path: ${{ inputs.config_path }}
           simulate_release: ${{ inputs.simulate_release }}

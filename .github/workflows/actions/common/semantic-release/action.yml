@@ -1,12 +1,12 @@
 # Action para Execução Híbrida do Semantic Release
-name: 'Semantic Release Híbrido'
+name: 'Semantic Release'
 description: 'Executa semantic-release, usando a config do repo consumidor ou o padrão se não existir. Instala plugins.'
 
 inputs:
-  node_version:
-    description: 'Versão do Node.js a ser usada.'
-    required: false
-    default: '20.x'
+  # node_version:
+  #   description: 'Versão do Node.js a ser usada.'
+  #   required: false
+  #   default: '20.x'
 
   github_token:
     description: 'GITHUB_TOKEN para criar releases e tags.'
