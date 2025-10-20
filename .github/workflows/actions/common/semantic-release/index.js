@@ -51,7 +51,7 @@ async function run() {
     const semanticReleaseBin = path.join(actionDir, 'node_modules', '.bin', 'semantic-release');
 
     // Comando final de execução
-    const command = [
+    let command = [
       semanticReleaseBin,
       '-p',
       releaseConfigPath,
