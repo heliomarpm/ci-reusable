@@ -29,7 +29,7 @@ async function run() {
     } else {
       core.info('⚠️ release.config.js não encontrado no repositório consumidor. Usando configuração padrão do template.');
       // O configPath aponta para o release.config.js padrão (ou alternativo) dentro da action
-      releaseConfigPath = path.join(consumerRepoDir, configPath);
+      releaseConfigPath = configPath; //path.join(consumerRepoDir, configPath);
     }
     
     if (!fs.existsSync(releaseConfigPath)) {
