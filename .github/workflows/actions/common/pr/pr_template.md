@@ -3,11 +3,11 @@
 Este Pull Request promove as alterações da branch `<!-- HEAD_BRANCH_PLACEHOLDER -->` para a branch `<!-- BASE_BRANCH_PLACEHOLDER -->`.
 
 ---
-### 🚨 Status de Qualidade: <!-- STATUS_EMOJI_PLACEHOLDER -->
-
-A cobertura de linhas é de <!-- COV_PCT_PLACEHOLDER -->% (Mínimo exigido: <!-- MIN_PCT_PLACEHOLDER -->%).
-
 ### 📊 Resultado da Cobertura de Testes
+
+**<!-- STATUS_EMOJI_PLACEHOLDER -->**
+
+A cobertura de linhas é de <!-- COV_PCT_PLACEHOLDER -->% 
 
 ```cmd
 
@@ -15,6 +15,7 @@ A cobertura de linhas é de <!-- COV_PCT_PLACEHOLDER -->% (Mínimo exigido: <!--
 
 ```
 
+---
 ### 📋 Resumo das Mudanças
 Todos os commits entre as branches foram incluídos. Por favor, revise as alterações e verifique o status dos checks de CI/CD.
 
@@ -36,5 +37,4 @@ Todos os commits entre as branches foram incluídos. Por favor, revise as altera
   
 **Revisor:**
 - [ ] O código segue os padrões do projeto.
-- [ ] A cobertura de testes atende ao limite de <!-- MIN_PCT_PLACEHOLDER -->%.
 - [ ] A funcionalidade está correta.
