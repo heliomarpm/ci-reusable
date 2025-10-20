@@ -7,24 +7,24 @@ async function run() {
   try {
     const GITHUB_TOKEN = core.getInput('github_token', { required: true });
     const NPM_TOKEN = core.getInput('npm_token');
-    const debug = core.getInput('debug') ? '--debug' : '';
-    const simulateRelease = core.getInput('simulate_release') || false;
-    const configPath = core.getInput('config_path');
+    const debug = Boolean(core.getInput('debug') || true) ? '--debug' : '';
+    const simulateRelease = Boolean(core.getInput('simulate_release') || false);
+    const configFile = core.getInput('config_file');
     const actionDir = path.join(__dirname, '..', '..', '..', '..', '..', '.github', 'workflows', 'actions', 'common', 'semantic-release');
     const consumerRepoDir = process.cwd();
 
     core.info(`DEBUG: ${debug}`);
     core.info(`SIMULATE_RELEASE: ${simulateRelease}`);
-    core.info(`CONFIG_PATH: ${configPath}`);
+    core.info(`CONFIG_FILE: ${configFile}`);
     core.info(`CONSUMER_REPO_DIR: ${consumerRepoDir}`);
 
     // 1. Configurar Tokens
     core.exportVariable('GITHUB_TOKEN', GITHUB_TOKEN);
     core.exportVariable('NPM_TOKEN', NPM_TOKEN);
-    
+
     // 2. Lógica Híbrida de Configuração
     let releaseConfigPath = '';
-    const consumerConfigPath = path.join(consumerRepoDir, configPath);
+    const consumerConfigPath = path.join(consumerRepoDir, configFile);
 
     if (fs.existsSync(consumerConfigPath)) {
       core.info('✅ release.config.js encontrado no repositório consumidor. Usando configuração local.');
