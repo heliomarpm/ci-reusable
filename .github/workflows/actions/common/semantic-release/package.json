@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Ação para rodar semantic-release com lógica de config híbrida.",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },

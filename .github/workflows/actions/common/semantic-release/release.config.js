@@ -5,7 +5,7 @@
  * Gera releases automáticas no GitHub e npm (se aplicável)
  */
 
-export default {
+module.exports = {
   branches: [
     "main",
     { name: "release", prerelease: true },
