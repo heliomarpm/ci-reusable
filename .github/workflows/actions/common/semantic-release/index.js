@@ -15,9 +15,9 @@ async function run() {
 
     // 1. Configurar Tokens
     core.exportVariable('GITHUB_TOKEN', GITHUB_TOKEN);
-    if (NPM_TOKEN) {
+    // if (NPM_TOKEN) {
       core.exportVariable('NPM_TOKEN', NPM_TOKEN);
-    }
+    // }
 
     // 2. Lógica Híbrida de Configuração
     let releaseConfigPath = '';
