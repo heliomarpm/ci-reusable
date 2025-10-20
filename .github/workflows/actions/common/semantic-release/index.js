@@ -32,6 +32,10 @@ async function run() {
       releaseConfigPath = path.join(consumerRepoDir, configPath);
     }
     
+    if (!fs.existsSync(releaseConfigPath)) {
+      throw new Error(`release.config.js not found at path: ${releaseConfigPath}`);
+    }
+    
     // 3. Instalar Dependências (Action e Plugins)
     core.info('📥 Instalando dependências e plugins do semantic-release...');
     // Instala as dependências listadas no package.json (devDependencies) da action
