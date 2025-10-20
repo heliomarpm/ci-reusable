@@ -12,15 +12,13 @@ O fluxo CI/CD é projetado para suportar o modelo **Git Flow simplificado**, uti
 
 ```mermaid
 graph TD
-    A[Commit em develop] --> B{Node.js/Dotnet test.yml};
-    B --> C{Teste Passou?};
-    C -- Sim --> D[Executa pr.yml];
-    D --> E[Cria/Atualiza PR (develop -> main)];
-    E --> F[Revisão e Merge em main];
-    F --> G{Merge em main};
-    G -- Sim --> H[Executa release.yml (Cria Tag e Release)];
-    H --> I[Executa publish.yml (Publica Pacote)];
-    I --> J(Pacote Publicado);
+    A(🚀 Commit in develop) --> B(🧪 Run test)
+    B --> |Success| C(🔄 Run create/update-pr)
+    C --> D[👥 Review & Merge]
+    D --> E(🧪 Run test in main)
+    E --> |Success| F(📚 Run deploy-docs)
+    E --> |Success| G(🏷️ Run release)
+    G --> |Success| H(📦 Run publish)
 ```
 ## 📦 Estrutura do Repositório
 Os workflows são organizados por stack, e as actions comuns são centralizadas para máxima reutilização:
@@ -28,8 +26,8 @@ Os workflows são organizados por stack, e as actions comuns são centralizadas 
       ci-templates/
       ├── .github/
       │   ├── workflows/
-      │   │   ├── node/      # Workflows para Node.js
-      │   │   ├── dotnet/    # Workflows para .NET
+      │   │   ├── node-*.yml      # Workflows para Node.js
+      │   │   ├── dotnet-*.yml    # Workflows para .NET
       │   │   └── actions/   # Actions comuns e reutilizáveis
       └── README.md
 
