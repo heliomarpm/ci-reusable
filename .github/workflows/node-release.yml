@@ -10,6 +10,12 @@ on:
         required: false
         default: '20.x'
         type: string
+            
+      package_manager:
+        description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
+        required: false
+        default: 'npm'
+        type: string
         
       branch_to_watch:
         description: 'Branch que deve disparar o release (e.g., main).'
@@ -30,11 +36,11 @@ on:
         type: boolean
 
     secrets:
-      # GITHUB_TOKEN:
-      #   description: 'Token GITHUB_TOKEN para publicar releases e tags.'
-      #   required: true
+      GH_TOKEN:
+        description: 'Token GITHUB_TOKEN para publicar releases e tags.'
+        required: true
       NPM_TOKEN:
-        description: 'Token para autenticação no NPM e GitHub Packages.'
+        description: 'Token para autenticação para publicar no NPM'
         required: false
 
 jobs:
@@ -47,23 +53,38 @@ jobs:
     steps:
       - name: ⬇️ Checkout do Código
         uses: actions/checkout@v4
-        with:
-          # Necessário para o semantic-release inspecionar histórico
-          fetch-depth: 0 
+        with:          
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0    # Necessário para o semantic-release inspecionar histórico
+          fetch-tags: true  # Necessário para o semantic-release inspecionar tags
 
       - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
-          cache: 'npm'
+          cache: ${{ inputs.package_manager }}
           # Configura o token no .npmrc para o publish posterior (se o publish for no release.yml)
           # registry-url: 'https://registry.npmjs.org' # Opcional: Se for usar outro registry
+
+      - name: ⬇️ Checkout do Repositório de Templates (Actions)
+        uses: actions/checkout@v4
+        with:
+          repository: heliomarpm/ci-reusable # Seu repositório de templates
+          ref: "main" # ${{ github.ref }} # Mantém a referência da branch de chamada
+          path: templates-repo
+          token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
+
+      # 6. Instalar as dependências da Action PR
+      - name: 📥 Instalar Dependências da Action
+        run: npm install
+        # Entra no diretório da action e executa 'npm install'
+        working-directory: templates-repo/.github/workflows/actions/common/semantic-release
 
       - name: 🚀 Executar Semantic Release Híbrido
         # A action híbrida cuida da instalação e execução
         uses: ./.github/workflows/actions/common/semantic-release
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          npm_token: ${{ secrets.NPM_TOKEN || '' }}
+          github_token: ${{ secrets.GH_TOKEN }}
+          npm_token: ${{ secrets.NPM_TOKEN || null}}
           debug: ${{ inputs.debug }}
           simulate_release: ${{ inputs.simulate_release }}

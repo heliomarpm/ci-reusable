@@ -15,6 +15,7 @@ inputs:
   npm_token:
     description: 'NPM_TOKEN para publicar no NPM (opcional, mas recomendado).'
     required: false
+    default: null
 
   debug:
     description: 'Habilita logs de debug do semantic-release (--debug).'

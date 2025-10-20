@@ -5,8 +5,8 @@ const path = require('path');
 
 async function run() {
   try {
-    const githubToken = core.getInput('github_token', { required: true });
-    const npmToken = core.getInput('npm_token');
+    const GITHUB_TOKEN = core.getInput('github_token', { required: true });
+    const NPM_TOKEN = core.getInput('npm_token');
     const debug = core.getInput('debug') ? '--debug' : '';
     const simulateRelease = core.getInput('simulate_release');
     const configPath = core.getInput('config_path');
@@ -14,9 +14,9 @@ async function run() {
     const consumerRepoDir = process.cwd();
 
     // 1. Configurar Tokens
-    core.exportVariable('GITHUB_TOKEN', githubToken);
-    if (npmToken) {
-      core.exportVariable('NPM_TOKEN', npmToken);
+    core.exportVariable('GITHUB_TOKEN', GITHUB_TOKEN);
+    if (NPM_TOKEN) {
+      core.exportVariable('NPM_TOKEN', NPM_TOKEN);
     }
 
     // 2. Lógica Híbrida de Configuração
@@ -58,10 +58,7 @@ async function run() {
 
     // Executar o semantic-release
     await exec.exec(command, [], {
-        env: { ...process.env, 
-               GITHUB_TOKEN: githubToken,
-               NPM_TOKEN: npmToken 
-        }
+        env: { ...process.env, GITHUB_TOKEN, NPM_TOKEN }
     });
 
     core.info('🎉 Semantic release concluído.');
