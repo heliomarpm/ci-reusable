@@ -13,6 +13,16 @@ async function run() {
     const actionDir = path.join(__dirname, '..', '..', '..', '..', '..', '.github', 'workflows', 'actions', 'common', 'semantic-release');
     const consumerRepoDir = process.cwd();
 
+    core.info('Carregando configuração do Semantic Release...', {
+      GITHUB_TOKEN, 
+      NPM_TOKEN,
+      debug,
+      simulateRelease,
+      configPath,
+      actionDir,
+      consumerRepoDir
+    });
+
     // 1. Configurar Tokens
     core.exportVariable('GITHUB_TOKEN', GITHUB_TOKEN);
     core.exportVariable('NPM_TOKEN', NPM_TOKEN);
