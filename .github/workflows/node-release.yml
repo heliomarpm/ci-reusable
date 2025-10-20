@@ -29,10 +29,10 @@ on:
         default: true
         type: boolean
 
-      config_path:
+      config_file:
         description: 'Caminho alternativo para o release.config.js do template.'
         required: false
-        default: '.github/workflows/actions/common/semantic-release/release.config.js'
+        default: 'release.config.js'
         type: string
 
       simulate_release:
@@ -92,5 +92,5 @@ jobs:
           github_token: ${{ secrets.GH_TOKEN }}
           npm_token: ${{ secrets.NPM_TOKEN || null}}
           debug: ${{ inputs.debug }}
-          config_path: ${{ inputs.config_path }}
+          config_file: ${{ inputs.config_file }}
           simulate_release: ${{ inputs.simulate_release }}

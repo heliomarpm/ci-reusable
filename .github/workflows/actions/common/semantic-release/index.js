@@ -21,32 +21,35 @@ async function run() {
 
     // 2. Lógica Híbrida de Configuração
     let releaseConfigPath = '';
-    const consumerConfigPath = path.join(consumerRepoDir, 'release.config.js');
-    
+    const consumerConfigPath = path.join(consumerRepoDir, configPath);
+
     if (fs.existsSync(consumerConfigPath)) {
       core.info('✅ release.config.js encontrado no repositório consumidor. Usando configuração local.');
       releaseConfigPath = consumerConfigPath;
     } else {
       core.info('⚠️ release.config.js não encontrado no repositório consumidor. Usando configuração padrão do template.');
       // O configPath aponta para o release.config.js padrão (ou alternativo) dentro da action
-      releaseConfigPath = configPath; //path.join(consumerRepoDir, configPath);
+      releaseConfigPath = path.join(actionDir, 'release.config.js');
+      if (!fs.existsSync(releaseConfigPath)) {
+        releaseConfigPath = "./templates-repo/.github/workflows/actions/common/semantic-release/release.config.js";
+      }
     }
-    
+
     if (!fs.existsSync(releaseConfigPath)) {
       throw new Error(`release.config.js not found at path: ${releaseConfigPath}`);
     }
-    
+
     // 3. Instalar Dependências (Action e Plugins)
     core.info('📥 Instalando dependências e plugins do semantic-release...');
     // Instala as dependências listadas no package.json (devDependencies) da action
     await exec.exec(`npm install --prefix ${actionDir}`);
-    
+
     // 4. Executar semantic-release
     core.info('🚀 Executando semantic-release...');
-    
+
     // Caminho para o binário do semantic-release instalado na action
     const semanticReleaseBin = path.join(actionDir, 'node_modules', '.bin', 'semantic-release');
-    
+
     // Comando final de execução
     const command = [
       semanticReleaseBin,
@@ -54,7 +57,7 @@ async function run() {
       releaseConfigPath,
       debug
     ].join(' ').trim();
-    
+
     if (simulateRelease) {
       core.info('⚠️ Simulando release para fins de testes.');
       command += ' --dry-run';
@@ -62,7 +65,7 @@ async function run() {
 
     // Executar o semantic-release
     await exec.exec(command, [], {
-        env: { ...process.env, GITHUB_TOKEN, NPM_TOKEN }
+      env: { ...process.env, GITHUB_TOKEN, NPM_TOKEN }
     });
 
     core.info('🎉 Semantic release concluído.');
