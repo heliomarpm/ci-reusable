@@ -102,7 +102,7 @@ jobs:
           ${{ inputs.test_coverage_command }} > coverage-report.txt 2>&1 || true
 
           # Extrai a porcentagem de cobertura de linhas (Assumindo formato Jest)
-          COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $5}' | tr -d '%')
+          COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $10}' | tr -d '%')
 
           echo "Cobertura de Linhas: $COV_LINE_PCT"
 
