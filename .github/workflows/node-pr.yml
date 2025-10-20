@@ -104,6 +104,8 @@ jobs:
           # Extrai a porcentagem de cobertura de linhas (Assumindo formato Jest)
           COV_LINE_PCT=$(grep 'All files' coverage-report.txt | awk '{print $5}' | tr -d '%')
 
+          echo "Cobertura de Linhas: $COV_LINE_PCT"
+
           # Garante que COV_LINE_PCT seja um número ou 0 para evitar o erro 'integer expression expected'
           if ! [[ "$COV_LINE_PCT" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
             COV_LINE_PCT=0
