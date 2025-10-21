@@ -99,9 +99,10 @@ jobs:
           gh auth setup-git
 
           # Garante que as labels existam (usando || true para não falhar se a label já existir)
-          gh label create "auto-generated" --description "PR criado automaticamente" --color "0E8A16" || true
+          gh label create "auto-generated" --description "PR criado automaticamente" --color "006B75" || true
           # gh label create "pending-review" --description "Aguardando revisão" --color "FBCA04" || true
           gh label create "coverage-failed" --description "Cobertura de testes abaixo do limite mínimo." --color "D93F0B" || true
+          gh label create "coverage-passed" --description "Cobertura de testes acima do limite mínimo." --color "0E8A16" || true
         env:
           # O token é necessário para os comandos 'gh'
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -134,7 +135,7 @@ jobs:
           else
             IS_COVERAGE_OK=true
             STATUS_EMOJI="🟢 Acima de ${MIN_PCT}%"
-            STATUS_LABEL="pending-review"
+            STATUS_LABEL="coverage-passed"
             echo "✅ Cobertura de Linhas ($COV_LINE_PCT%) está OK (Acima de $MIN_PCT%)."
           fi
 
@@ -203,14 +204,13 @@ jobs:
             if [ "$STATUS_LABEL" == "coverage-failed" ]; then
               # Se falhou, adiciona a label de falha e remove a de sucesso
               gh pr edit $PR_NUMBER \
-                --add-label "$PR_LABELS"
-              # gh pr edit $PR_NUMBER --remove-label "pending-review" || true
+                --add-label "$PR_LABELS" \
+                --remove-label "coverage-passed" || true
             else
               # Se passou, remove a label de falha e garante 'pending-review'
               gh pr edit $PR_NUMBER \
-                --add-label "auto-generated" \
-                --remove-label "coverage-failed" || true
-              # gh pr edit $PR_NUMBER --add-label "pending-review"
+                --add-label "$PR_LABELS" \
+                --remove-label "coverage-failed" || true              
             fi
           fi
         env:
