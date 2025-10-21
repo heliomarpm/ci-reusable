@@ -55,6 +55,9 @@ jobs:
     # Só executa na branch configurada para evitar releases acidentais
     if: github.ref == format('refs/heads/{0}', inputs.branch_to_watch)
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # Necessário para operações gerais de escrita
     
     steps:
       - name: ⬇️ Checkout do Código
