@@ -7,8 +7,8 @@ async function run() {
   try {
     const GITHUB_TOKEN = core.getInput('github_token', { required: true });
     const NPM_TOKEN = core.getInput('npm_token');
-    const debug = Boolean(core.getInput('debug') || true) ? '--debug' : '';
-    const simulateRelease = Boolean(core.getInput('simulate_release') || false);
+    const debug = core.getInput('debug') === 'true' ? '--debug' : '';
+    const simulateRelease = core.getInput('simulate_release') === 'true' ? '--dry-run' : '';
     const configFile = core.getInput('config_file');
     const actionDir = path.join(__dirname, '..', '..', '..', '..', '..', '.github', 'workflows', 'actions', 'common', 'semantic-release');
     const consumerRepoDir = process.cwd();
@@ -51,16 +51,16 @@ async function run() {
     const semanticReleaseBin = path.join(actionDir, 'node_modules', '.bin', 'semantic-release');
 
     // Comando final de execução
-    let command = [
+    const command = [
       semanticReleaseBin,
       '-p',
       releaseConfigPath,
-      debug
+      debug,
+      simulateRelease
     ].join(' ').trim();
 
-    if (simulateRelease) {
+    if (simulateRelease !== '') {
       core.info('⚠️ Simulando release para fins de testes.');
-      command += ' --dry-run';
     }
 
     core.info(`🚀 Executando: ${command}`);
