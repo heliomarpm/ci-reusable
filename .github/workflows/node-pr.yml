@@ -131,12 +131,12 @@ jobs:
             IS_COVERAGE_OK=false
             STATUS_EMOJI="🔴 Abaixo de ${MIN_PCT}%"
             STATUS_LABEL="coverage-failed"
-            echo "⚠️ Cobertura de Linhas ($COV_LINE_PCT%) está ABAIXO do limite mínimo ($MIN_PCT%)."
+            echo "⚠️ coverage ($COV_LINE_PCT%) está ABAIXO do limite mínimo ($MIN_PCT%)."
           else
             IS_COVERAGE_OK=true
             STATUS_EMOJI="🟢 Acima de ${MIN_PCT}%"
             STATUS_LABEL="coverage-passed"
-            echo "✅ Cobertura de Linhas ($COV_LINE_PCT%) está OK (Acima de $MIN_PCT%)."
+            echo "✅ coverage ($COV_LINE_PCT%) está OK (Acima de $MIN_PCT%)."
           fi
 
           # Formata o título com data (se o input for o default)

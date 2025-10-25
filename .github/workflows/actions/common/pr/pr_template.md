@@ -5,7 +5,7 @@ Este Pull Request promove as alterações da branch `<!-- HEAD_BRANCH_PLACEHOLDE
 ---
 ### 📊 Resultado da Cobertura de Testes
 
-A cobertura de linhas é de <!-- COV_PCT_PLACEHOLDER -->% 
+***coverage <!-- COV_PCT_PLACEHOLDER -->%***
 
 **Status: <!-- STATUS_EMOJI_PLACEHOLDER -->**
 
