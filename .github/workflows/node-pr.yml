@@ -62,8 +62,6 @@ jobs:
       contents: write # Necessário para operações gerais de escrita
       pull-requests: write # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
       actions: read # read para o contexto
-      checks: write
-      statuses: write
 
     steps:
       - name: ⬇️ Checkout do Código Consumidor
