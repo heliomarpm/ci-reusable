@@ -51,15 +51,15 @@ on:
 
 jobs:
   run_semantic_release:
-    name: Executar Semantic Release
+    name: Executar Semantic Release na branch ${{ inputs.branch_to_watch }}
     # Só executa na branch configurada para evitar releases acidentais
     if: github.ref == format('refs/heads/{0}', inputs.branch_to_watch)
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write # Necessário para operações gerais de escrita
-      checks: write # ESSENCIAL: Concede permissão para criar e manipular Checks
-      statuses: write # ESSENCIAL: Concede permissão para criar e manipular Statuses
+    # permissions:
+    #   contents: write # Necessário para operações gerais de escrita
+    #   checks: write # ESSENCIAL: Concede permissão para criar e manipular Checks
+    #   statuses: write # ESSENCIAL: Concede permissão para criar e manipular Statuses
     
     steps:
       - name: ⬇️ Checkout do Código
