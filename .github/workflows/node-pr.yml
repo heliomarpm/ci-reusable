@@ -52,10 +52,6 @@ on:
       GH_TOKEN:
         description: "Token GITHUB_TOKEN para permissões de PR."
         required: true
-        
-permissions:
-  checks: write
-  statuses: write
 
 jobs:
   create_or_update_pr:
@@ -66,6 +62,8 @@ jobs:
       contents: write # Necessário para operações gerais de escrita
       pull-requests: write # ESSENCIAL: Concede permissão para criar e manipular Pull Requests.
       actions: read # read para o contexto
+      checks: write
+      statuses: write
 
     steps:
       - name: ⬇️ Checkout do Código Consumidor
