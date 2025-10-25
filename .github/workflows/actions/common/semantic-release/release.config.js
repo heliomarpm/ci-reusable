@@ -36,13 +36,26 @@ module.exports = {
       }
     ],
     // Gera changelog automaticamente com base nos commits
-    "@semantic-release/release-notes-generator",    
+    "@semantic-release/release-notes-generator", 
+    
+    // Atualiza o CHANGELOG.md
     ["@semantic-release/changelog", {
       changelogFile: "CHANGELOG.md",
       changelogTitle: "# 📦 Changelog\n\nAll notable changes to this project will be documented in this file."
     }],
-    ["@semantic-release/npm", { npmPublish: false }],
 
+    // ["@semantic-release/npm", { npmPublish: false }],
+    
+    // Commita arquivos alterados (CHANGELOG.md, package.json, etc)
+    [
+      "@semantic-release/git",
+      {
+        assets: ["CHANGELOG.md", "package.json", "package-lock.json"],
+        message: "chore(release): set version ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+        tag: "${version}"
+      }
+    ],
+    
     // Cria uma release no GitHub com changelog e artefatos
     ["@semantic-release/github", {
       successComment: true, 
@@ -52,15 +65,5 @@ module.exports = {
         { path: "coverage/**", label: "Coverage Report" },
       ],
     }],
-
-    // Commita arquivos alterados (CHANGELOG.md, package.json, etc)
-    [
-      "@semantic-release/git",
-      {
-        assets: ["CHANGELOG.md", "package.json", "package-lock.json"],
-        message: "chore(release): set `package.json` to ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
-        tag: "${version}"
-      }
-    ]
   ]
 };
