@@ -10,7 +10,7 @@ on:
         required: false
         default: '20.x'
         type: string
-            
+        
       package_manager:
         description: 'Gerenciador de pacotes (npm, yarn, pnpm).'
         required: false
@@ -55,43 +55,39 @@ jobs:
     # Só executa na branch configurada para evitar releases acidentais
     if: github.ref == format('refs/heads/{0}', inputs.branch_to_watch)
     runs-on: ubuntu-latest
-
-    # permissions:
-    #   contents: write # Necessário para operações gerais de escrita
-    #   checks: write # ESSENCIAL: Concede permissão para criar e manipular Checks
-    #   statuses: write # ESSENCIAL: Concede permissão para criar e manipular Statuses
     
     steps:
       - name: ⬇️ Checkout do Código
         uses: actions/checkout@v4
-        with:          
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0    # Necessário para o semantic-release inspecionar histórico
-          fetch-tags: true  # Necessário para o semantic-release inspecionar tags
-          token: ${{ secrets.GH_TOKEN }}
+        with: 
+          # A linha 'ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0 	# Necessário para o semantic-release inspecionar histórico
+          fetch-tags: true 	# Necessário para o semantic-release inspecionar tags
+          token: ${{ secrets.GH_TOKEN }} # Necessário para autenticar PUSH
+
+      - name: ⚙️ Configurar Usuário Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node_version }}
           cache: ${{ inputs.package_manager }}
-          # Configura o token no .npmrc para o publish posterior (se o publish for no release.yml)
-          # registry-url: 'https://registry.npmjs.org' # Opcional: Se for usar outro registry
 
       - name: ⬇️ Checkout do Repositório de Templates (Actions)
         uses: actions/checkout@v4
         with:
           repository: heliomarpm/ci-reusable # Seu repositório de templates
-          ref: "main" # ${{ github.ref }} # Mantém a referência da branch de chamada
+          ref: "main" # {{ github.ref }} # Mantém a referência da branch de chamada
           path: templates-repo
           token: ${{ secrets.GH_TOKEN }} # Necessário se o repositório for privado
 
-      # Entra no diretório da action e executa 'npm install'
       - name: 📥 Instalar Dependências da Action
         run: npm install
         working-directory: templates-repo/.github/workflows/actions/common/semantic-release
 
-      # A action do semantic-release cuida da instalação e execução
       - name: 🚀 Executar Semantic Release
         uses: ./templates-repo/.github/workflows/actions/common/semantic-release
         with:
