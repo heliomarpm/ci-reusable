@@ -100,6 +100,7 @@ jobs:
             -F status='completed' \
             -F conclusion='success' \
             -F output='{"title":"Validação OK","summary":"Todos os testes passaram com sucesso."}'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
@@ -110,6 +111,7 @@ jobs:
             -F state='success' \
             -F context='Validação de Código' \
             -F description='Tudo certo com o commit!'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}        
 
