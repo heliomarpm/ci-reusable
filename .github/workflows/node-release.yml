@@ -58,6 +58,8 @@ jobs:
 
     permissions:
       contents: write # Necessário para operações gerais de escrita
+      checks: write # ESSENCIAL: Concede permissão para criar e manipular Checks
+      statuses: write # ESSENCIAL: Concede permissão para criar e manipular Statuses
     
     steps:
       - name: ⬇️ Checkout do Código
@@ -66,6 +68,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0    # Necessário para o semantic-release inspecionar histórico
           fetch-tags: true  # Necessário para o semantic-release inspecionar tags
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: ⚙️ Configurar Node.js ${{ inputs.node_version }}
         uses: actions/setup-node@v4
