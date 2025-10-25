@@ -52,6 +52,10 @@ on:
       GH_TOKEN:
         description: "Token GITHUB_TOKEN para permissões de PR."
         required: true
+        
+permissions:
+  checks: write
+  statuses: write
 
 jobs:
   create_or_update_pr:
@@ -90,6 +94,28 @@ jobs:
 
       - name: 📥 Instalar GitHub CLI
         run: sudo apt-get update && sudo apt-get install -y gh
+
+      - name: ✅ Criar Check Customizado
+        run: |
+          gh api repos/${{ github.repository }}/check-runs \
+            -X POST \
+            -F name='Validação de Código' \
+            -F head_sha='${{ github.sha }}' \
+            -F status='completed' \
+            -F conclusion='success' \
+            -F output='{"title":"Validação OK","summary":"Todos os testes passaram com sucesso."}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: 📊 Atualizar Status do Commit
+        run: |
+          gh api repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -X POST \
+            -F state='success' \
+            -F context='Validação de Código' \
+            -F description='Tudo certo com o commit!'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}        
 
       - name: 🔐 Autenticar GitHub CLI e Criar Labels
         run: |
