@@ -146,7 +146,7 @@ jobs:
           fi
 
           # Extrai a tabela de cobertura do Jest (assumindo que Jest é o runner)
-          COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -3)
+          COV_TABLE=$(awk '/^--/ {flag=1; next} flag {print}' coverage-report.txt | head -n -0)
 
           # Monta o corpo do PR lendo o template e substituindo placeholders          
           cp pr-template-source/.github/workflows/actions/common/pr/pr_template.md pr_body.md
