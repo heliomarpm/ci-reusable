@@ -44,7 +44,7 @@ module.exports = {
       changelogTitle: "# 📦 Changelog\n\nAll notable changes to this project will be documented in this file."
     }],
 
-    ["@semantic-release/npm", { npmPublish: false }],
+    ["@semantic-release/npm", { npmPublish: false, pkgRoot: "." }],
     
     // Commita arquivos alterados (CHANGELOG.md, package.json, etc)
     [
